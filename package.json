@@ -1,0 +1,27 @@
+{
+  "name": "sparkler-game-phaser",
+  "version": "0.0.0",
+  "description": "TODO",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack",
+    "build:prod": "NODE_ENV=production webpack",
+    "dev": "webpack serve",
+    "deploy": "gh-pages -d dist"
+  },
+  "author": "Jonathan Taylor",
+  "license": "MIT",
+  "devDependencies": {
+    "copy-webpack-plugin": "^9.0.1",
+    "gh-pages": "^3.2.3",
+    "ts-loader": "^9.2.5",
+    "typescript": "^4.3.5",
+    "webpack": "^5.50.0",
+    "webpack-cli": "^4.7.2",
+    "webpack-dev-server": "^3.11.2"
+  },
+  "dependencies": {
+    "phaser": "^3.55.2",
+    "phaser3-rex-plugins": "^1.1.59"
+  }
+}
