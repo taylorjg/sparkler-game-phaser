@@ -12,7 +12,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
     mode: Phaser.Scale.NONE,
     fullscreenTarget: 'game'
   },
-  backgroundColor: '#AAAAAA',
+  backgroundColor: '#000000',
   scene: [GameScene, HUDScene],
   parent: 'game',
   dom: {
