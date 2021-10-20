@@ -22,6 +22,9 @@ export class GameScene extends Phaser.Scene {
     const cy = windowHeight / 2
 
     this.ship = this.add.rectangle(cx, cy, 20, 20, 0xFF0000)
+    this.physics.add.existing(this.ship)
+    const body = this.ship.body as Phaser.Physics.Arcade.Body
+    console.dir(body)
   }
 
   private resize(): void {

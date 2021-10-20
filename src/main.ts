@@ -18,6 +18,14 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
   dom: {
     createContainer: true
   },
+  physics: {
+    default: 'arcade',
+    arcade: {
+      gravity: {
+        y: 200
+      }
+    }
+  },
   plugins: {
     scene: [{
       key: 'rexUI',
