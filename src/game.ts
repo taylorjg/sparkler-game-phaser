@@ -9,6 +9,9 @@ export class GameScene extends Phaser.Scene {
   }
 
   create() {
+    const searchParams = new URLSearchParams(window.location.search)
+    this.physics.world.drawDebug = searchParams.has('debug')
+
     const onResize = () => this.resize()
     const onOrientationChange = () => this.resize()
 
