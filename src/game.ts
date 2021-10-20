@@ -2,13 +2,16 @@ import * as Phaser from 'phaser'
 
 export class GameScene extends Phaser.Scene {
 
-  ship: Phaser.GameObjects.Rectangle
+  private cursors: Phaser.Types.Input.Keyboard.CursorKeys
+  private ship: Phaser.GameObjects.Rectangle
 
-  constructor() {
+  public constructor() {
     super('Game')
   }
 
-  create() {
+  public create() {
+    this.cursors = this.input.keyboard.createCursorKeys()
+
     const searchParams = new URLSearchParams(window.location.search)
     this.physics.world.drawDebug = searchParams.has('debug')
 
@@ -26,8 +29,12 @@ export class GameScene extends Phaser.Scene {
 
     this.ship = this.add.rectangle(cx, cy, 20, 20, 0xFF0000)
     this.physics.add.existing(this.ship)
+  }
+
+  public update(_time: number, _delta: number) {
     const body = this.ship.body as Phaser.Physics.Arcade.Body
-    console.dir(body)
+    const accelerationY = this.cursors.up.isDown ? -600 : 0
+    body.setAccelerationY(accelerationY)
   }
 
   private resize(): void {
