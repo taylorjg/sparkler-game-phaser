@@ -2,6 +2,8 @@ import * as Phaser from 'phaser'
 
 export class GameScene extends Phaser.Scene {
 
+  ship: Phaser.GameObjects.Rectangle
+
   constructor() {
     super('Game')
   }
@@ -12,6 +14,14 @@ export class GameScene extends Phaser.Scene {
 
     window.addEventListener('resize', onResize)
     window.addEventListener('orientationchange', onOrientationChange)
+
+    const windowWidth = window.innerWidth
+    const windowHeight = window.innerHeight
+
+    const cx = windowWidth / 2
+    const cy = windowHeight / 2
+
+    this.ship = this.add.rectangle(cx, cy, 20, 20, 0xFF0000)
   }
 
   private resize(): void {
