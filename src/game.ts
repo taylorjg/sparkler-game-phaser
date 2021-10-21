@@ -32,6 +32,7 @@ export class GameScene extends Phaser.Scene {
     this.ship = this.add.rectangle(cx, cy, 20, 20, 0xFF0000)
     this.physics.add.existing(this.ship)
     const body = this.ship.body as Phaser.Physics.Arcade.Body
+    body.setCollideWorldBounds(true)
     body.moves = false
   }
 
@@ -41,7 +42,7 @@ export class GameScene extends Phaser.Scene {
       body.moves = true
       this.started = true
     }
-    const accelerationY = this.cursors.up.isDown ? -600 : 0
+    const accelerationY = this.cursors.up.isDown ? -700 : 0
     body.setAccelerationY(accelerationY)
   }
 
