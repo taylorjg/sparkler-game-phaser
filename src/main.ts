@@ -4,7 +4,7 @@ import { GameScene } from './game'
 import { HUDScene } from './hud'
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
-  title: 'Continuo',
+  title: 'Sparkler Game',
   type: Phaser.AUTO,
   scale: {
     width: window.innerWidth,
