@@ -34,6 +34,8 @@ export class GameScene extends Phaser.Scene {
     const body = this.ship.body as Phaser.Physics.Arcade.Body
     body.setCollideWorldBounds(true)
     body.moves = false
+
+    this.makeObstaclePair(1000, 40)
   }
 
   public update(_time: number, _delta: number) {
@@ -50,5 +52,34 @@ export class GameScene extends Phaser.Scene {
     const windowWidth = window.innerWidth
     const windowHeight = window.innerHeight
     this.scale.resize(windowWidth, windowHeight)
+  }
+
+  private makeObstaclePair(x: number, percent: number) {
+
+    const windoHeight = window.innerHeight
+    const ratio = Math.random() - 0.5
+    const height = windoHeight * percent / 100
+    const height1 = (1 + ratio) * height
+    const height2 = (1 - ratio) * height
+
+    const OBSTACLE_WIDTH = 80
+    const RADIUS = OBSTACLE_WIDTH / 2
+
+    const obstacle1 = this.add.path(0, 0)
+    obstacle1.moveTo(x, 0)
+    obstacle1.lineTo(x, height1 - RADIUS)
+    obstacle1.ellipseTo(RADIUS, RADIUS, 180, 0, true)
+    obstacle1.lineTo(x + OBSTACLE_WIDTH, 0)
+
+    const obstacle2 = this.add.path(0, 0)
+    obstacle2.moveTo(x, windoHeight)
+    obstacle2.lineTo(x, windoHeight - height2 + RADIUS)
+    obstacle2.ellipseTo(RADIUS, RADIUS, 180, 0, false)
+    obstacle2.lineTo(x + OBSTACLE_WIDTH, windoHeight)
+
+    const graphics = this.add.graphics()
+    graphics.lineStyle(2, 0xFFFFFF)
+    obstacle1.draw(graphics)
+    obstacle2.draw(graphics)
   }
 }
