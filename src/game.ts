@@ -30,11 +30,13 @@ export class GameScene extends Phaser.Scene {
     const cy = windowHeight / 2
 
     this.ship = this.add.rectangle(cx, cy, 20, 20, 0xFF0000)
+    this.ship.scrollFactorX = 0
     this.physics.add.existing(this.ship)
     const body = this.ship.body as Phaser.Physics.Arcade.Body
     body.setCollideWorldBounds(true)
     body.moves = false
 
+    this.makeObstaclePair(350, 20)
     this.makeObstaclePair(1000, 10)
   }
 
@@ -46,6 +48,9 @@ export class GameScene extends Phaser.Scene {
     }
     const accelerationY = this.cursors.up.isDown ? -700 : 0
     body.setAccelerationY(accelerationY)
+    if (this.started) {
+      this.cameras.main.scrollX += 2
+    }
   }
 
   private resize(): void {
