@@ -1,4 +1,5 @@
 import * as Phaser from 'phaser'
+import { SparklerGameEvents } from './constants'
 
 export class GameScene extends Phaser.Scene {
 
@@ -43,7 +44,6 @@ export class GameScene extends Phaser.Scene {
     const [p3, p4] = this.makeObstaclePair(1000, 10)
     this.obstacles = []
     this.obstacles.push(p1, p2, p3, p4)
-    console.dir(this.obstacles)
   }
 
   public update(_time: number, _delta: number) {
@@ -74,6 +74,7 @@ export class GameScene extends Phaser.Scene {
       this.gameEnded = true
       const body = this.ship.body as Phaser.Physics.Arcade.Body
       body.moves = false
+      this.game.events.emit(SparklerGameEvents.GameEnded)
     }
   }
 

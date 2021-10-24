@@ -31,6 +31,9 @@ module.exports = {
       patterns: [
         {
           from: 'src/index.html'
+        },
+        {
+          from: 'assets/**/*'
         }
       ]
     }),
