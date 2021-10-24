@@ -4,7 +4,9 @@ export class GameScene extends Phaser.Scene {
 
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys
   private started: Boolean
+  private gameEnded: Boolean
   private ship: Phaser.GameObjects.Rectangle
+  private obstacles: Phaser.GameObjects.Polygon[]
 
   public constructor() {
     super('Game')
@@ -13,6 +15,7 @@ export class GameScene extends Phaser.Scene {
   public create() {
     this.cursors = this.input.keyboard.createCursorKeys()
     this.started = false
+    this.gameEnded = false
 
     const searchParams = new URLSearchParams(window.location.search)
     this.physics.world.drawDebug = searchParams.has('debug')
@@ -36,20 +39,41 @@ export class GameScene extends Phaser.Scene {
     body.setCollideWorldBounds(true)
     body.moves = false
 
-    this.makeObstaclePair(350, 20)
-    this.makeObstaclePair(1000, 10)
+    const [p1, p2] = this.makeObstaclePair(350, 20)
+    const [p3, p4] = this.makeObstaclePair(1000, 10)
+    this.obstacles = []
+    this.obstacles.push(p1, p2, p3, p4)
+    console.dir(this.obstacles)
   }
 
   public update(_time: number, _delta: number) {
+
+    if (this.gameEnded) return
+
     const body = this.ship.body as Phaser.Physics.Arcade.Body
+
     if (!this.started && this.cursors.up.isDown) {
       body.moves = true
       this.started = true
     }
+
     const accelerationY = this.cursors.up.isDown ? -700 : 0
     body.setAccelerationY(accelerationY)
     if (this.started) {
       this.cameras.main.scrollX += 2
+    }
+
+    this.checkForCollision()
+  }
+
+  private checkForCollision(): void {
+    const shipX = this.ship.x + this.cameras.main.scrollX
+    const shipY = this.ship.y
+    const collision = this.obstacles.some(obstacle => obstacle.geom.contains(shipX, shipY))
+    if (collision) {
+      this.gameEnded = true
+      const body = this.ship.body as Phaser.Physics.Arcade.Body
+      body.moves = false
     }
   }
 
@@ -59,33 +83,52 @@ export class GameScene extends Phaser.Scene {
     this.scale.resize(windowWidth, windowHeight)
   }
 
-  private makeObstaclePair(x: number, gapPercent: number) {
+  private makeObstaclePair(
+    x: number,
+    gapPercent: number
+  ): [Phaser.GameObjects.Polygon, Phaser.GameObjects.Polygon] {
 
-    const windowHeight = window.innerHeight
-    const gapHeight = windowHeight * gapPercent / 100
-    const remainingHeight = windowHeight - gapHeight
-    const ratio = Phaser.Math.FloatBetween(-0.5, 0.5)
-    const upperHeight = (1 + ratio) * remainingHeight / 2
-    const lowerHeight = (1 - ratio) * remainingHeight / 2
+    const makeObstacle = (
+      addPathDetails: (path: Phaser.Curves.Path) => void
+    ): Phaser.GameObjects.Polygon => {
+      const path = new Phaser.Curves.Path()
+      addPathDetails(path)
+      const points = path.getPoints()
+      const polygon = this.add.polygon(0, 0, points)
+      polygon.closePath = false
+      polygon.setOrigin(0, 0)
+      polygon.isStroked = true
+      polygon.lineWidth = 2
+      polygon.strokeColor = 0xFFFFFF
+      return polygon
+    }
 
     const OBSTACLE_WIDTH = 50
     const RADIUS = OBSTACLE_WIDTH / 2
 
-    const upperObstaclePath = this.add.path(0, 0)
-    upperObstaclePath.moveTo(x, 0)
-    upperObstaclePath.lineTo(x, upperHeight - RADIUS)
-    upperObstaclePath.ellipseTo(RADIUS, RADIUS, 180, 0, true)
-    upperObstaclePath.lineTo(x + OBSTACLE_WIDTH, 0)
+    const windowHeight = window.innerHeight
+    const gapHeight = windowHeight * gapPercent / 100
+    const halfRemainingHeight = (windowHeight - gapHeight) / 2
+    const centreOffsetRatio = Phaser.Math.FloatBetween(-0.5, 0.5)
+    const upperHeight = (1 + centreOffsetRatio) * halfRemainingHeight
+    const lowerHeight = (1 - centreOffsetRatio) * halfRemainingHeight
 
-    const lowerObstaclePath = this.add.path(0, 0)
-    lowerObstaclePath.moveTo(x, windowHeight)
-    lowerObstaclePath.lineTo(x, windowHeight - lowerHeight + RADIUS)
-    lowerObstaclePath.ellipseTo(RADIUS, RADIUS, 180, 0, false)
-    lowerObstaclePath.lineTo(x + OBSTACLE_WIDTH, windowHeight)
+    const upperObstacle = makeObstacle((path: Phaser.Curves.Path): void => {
+      path
+        .moveTo(x, 0)
+        .lineTo(x, upperHeight - RADIUS)
+        .ellipseTo(RADIUS, RADIUS, 180, 0, true)
+        .lineTo(x + OBSTACLE_WIDTH, 0)
+    })
 
-    const graphics = this.add.graphics()
-    graphics.lineStyle(2, 0xFFFFFF)
-    upperObstaclePath.draw(graphics)
-    lowerObstaclePath.draw(graphics)
+    const lowerObstacle = makeObstacle((path: Phaser.Curves.Path): void => {
+      path
+        .moveTo(x, windowHeight)
+        .lineTo(x, windowHeight - lowerHeight + RADIUS)
+        .ellipseTo(RADIUS, RADIUS, 180, 0, false)
+        .lineTo(x + OBSTACLE_WIDTH, windowHeight)
+    })
+
+    return [upperObstacle, lowerObstacle]
   }
 }
