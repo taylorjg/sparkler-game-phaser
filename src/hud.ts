@@ -12,7 +12,8 @@ const TEXT_STYLE = {
 export class HUDScene extends Phaser.Scene {
 
   private rexUI: RexUIPlugin
-  private scorePanel: RexUIPlugin.Sizer
+  private score: number
+  private scoreText: Phaser.GameObjects.Text
   private gameOverPanel: RexUIPlugin.Sizer
 
   public constructor() {
@@ -20,17 +21,19 @@ export class HUDScene extends Phaser.Scene {
       key: 'HUD',
       active: true
     })
+    this.score = 0
   }
 
   public create() {
     this.game.events.on(SparklerGameEvents.ObstacleCleared, this.onObstacleCleared, this)
     this.game.events.on(SparklerGameEvents.GameEnded, this.onGameEnded, this)
 
-    this.scorePanel = this.rexUI.add.sizer({
+    this.scoreText = this.add.text(0, 0, '', TEXT_STYLE)
+    this.rexUI.add.sizer({
       orientation: 'horizontal',
       anchor: { left: 'left+20', top: 'top+20' }
     })
-      .add(this.add.text(0, 0, '0', TEXT_STYLE))
+      .add(this.scoreText)
       .layout()
 
     this.gameOverPanel = this.rexUI.add.sizer({
@@ -40,14 +43,20 @@ export class HUDScene extends Phaser.Scene {
       .add(this.add.text(0, 0, 'GAME OVER', TEXT_STYLE))
       .setVisible(false)
       .layout()
+
+    this.updateScoreText()
   }
 
-  private onObstacleCleared() {
-    console.log('[HUDScene#onObstacleCleared]')
+  private updateScoreText(): void {
+    this.scoreText.setText(`${this.score}`)
   }
 
-  private onGameEnded() {
-    console.log('[HUDScene#onGameEnded]')
+  private onObstacleCleared(): void {
+    this.score++
+    this.updateScoreText()
+  }
+
+  private onGameEnded(): void {
     this.gameOverPanel.setVisible(true)
   }
 }
