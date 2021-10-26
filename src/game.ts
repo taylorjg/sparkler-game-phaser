@@ -1,7 +1,10 @@
 import * as Phaser from 'phaser'
 import { SparklerGameEvents } from './constants'
 
-const SCROLL_X_SPEED = 2
+const SCROLL_X_SPEED = 5
+const OBSTACLE_WIDTH = 80
+const INITIAL_GAP_PERCENT = 30
+const MIN_GAP_PERCENT = 5
 
 export class GameScene extends Phaser.Scene {
 
@@ -10,6 +13,7 @@ export class GameScene extends Phaser.Scene {
   private gameEnded: Boolean
   private ship: Phaser.GameObjects.Rectangle
   private obstacles: Phaser.GameObjects.Polygon[]
+  private gapPercent: number
 
   public constructor() {
     super('Game')
@@ -23,6 +27,7 @@ export class GameScene extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys()
     this.started = false
     this.gameEnded = false
+    this.gapPercent = INITIAL_GAP_PERCENT
 
     const searchParams = new URLSearchParams(window.location.search)
     this.physics.world.drawDebug = searchParams.has('debug')
@@ -43,10 +48,7 @@ export class GameScene extends Phaser.Scene {
     body.setCollideWorldBounds(true)
     body.moves = false
 
-    const [p1, p2] = this.makeObstaclePair(500, 20)
-    const [p3, p4] = this.makeObstaclePair(1000, 10)
-    this.obstacles = []
-    this.obstacles.push(p1, p2, p3, p4)
+    this.obstacles = [] = this.makeObstaclePair(windowWidth * 0.75, this.gapPercent)
   }
 
   public update(_time: number, _delta: number) {
@@ -90,6 +92,18 @@ export class GameScene extends Phaser.Scene {
     if (obstacleCleared) {
       this.game.events.emit(SparklerGameEvents.ObstacleCleared)
       this.burst(shipX, shipY)
+    }
+
+    const obstacleGone = this.obstacles.some(obstacle => {
+      const right = Phaser.Geom.Polygon.GetAABB(obstacle.geom).right
+      return right < this.cameras.main.scrollX
+    })
+    if (obstacleGone) {
+      if (this.gapPercent > MIN_GAP_PERCENT) {
+        this.gapPercent -= 2
+      }
+      const windowWidth = window.innerWidth
+      this.obstacles = [] = this.makeObstaclePair(this.cameras.main.scrollX + windowWidth + OBSTACLE_WIDTH + 10, this.gapPercent)
     }
   }
 
@@ -135,7 +149,6 @@ export class GameScene extends Phaser.Scene {
       return polygon
     }
 
-    const OBSTACLE_WIDTH = 80
     const RADIUS = OBSTACLE_WIDTH / 2
 
     const windowHeight = window.innerHeight
