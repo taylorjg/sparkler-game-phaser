@@ -96,13 +96,13 @@ export class GameScene extends Phaser.Scene {
   private burst(x: number, y: number): void {
     const particles = this.add.particles('flares')
     const emitter = particles.createEmitter({
-      frame: ['white', 'blue'],
+      frame: ['white', 'blue', 'green', 'yellow'],
       angle: { start: 0, end: 360, steps: 8 },
-      lifespan: 1000,
+      lifespan: 250,
       scale: 0.1
     })
     const initialSpeed = 250
-    const speedIncrement = 50
+    const speedIncrement = 250
     for (const index of [0, 1, 2, 3, 4]) {
       emitter.setSpeed(initialSpeed + index * speedIncrement)
       emitter.explode(8, x + 10, y)
