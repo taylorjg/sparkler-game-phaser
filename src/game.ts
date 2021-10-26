@@ -15,6 +15,10 @@ export class GameScene extends Phaser.Scene {
     super('Game')
   }
 
+  public preload() {
+    this.load.atlas('flares', 'assets/particles/flares.png', 'assets/particles/flares.json')
+  }
+
   public create() {
     this.cursors = this.input.keyboard.createCursorKeys()
     this.started = false
@@ -85,6 +89,23 @@ export class GameScene extends Phaser.Scene {
     })
     if (obstacleCleared) {
       this.game.events.emit(SparklerGameEvents.ObstacleCleared)
+      this.burst(shipX, shipY)
+    }
+  }
+
+  private burst(x: number, y: number): void {
+    const particles = this.add.particles('flares')
+    const emitter = particles.createEmitter({
+      frame: ['white', 'blue'],
+      angle: { start: 0, end: 360, steps: 8 },
+      lifespan: 1000,
+      scale: 0.1
+    })
+    const initialSpeed = 250
+    const speedIncrement = 50
+    for (const index of [0, 1, 2, 3, 4]) {
+      emitter.setSpeed(initialSpeed + index * speedIncrement)
+      emitter.explode(8, x + 10, y)
     }
   }
 
@@ -114,7 +135,7 @@ export class GameScene extends Phaser.Scene {
       return polygon
     }
 
-    const OBSTACLE_WIDTH = 50
+    const OBSTACLE_WIDTH = 80
     const RADIUS = OBSTACLE_WIDTH / 2
 
     const windowHeight = window.innerHeight
