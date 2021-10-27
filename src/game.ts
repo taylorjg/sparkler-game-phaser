@@ -12,6 +12,7 @@ export class GameScene extends Phaser.Scene {
   private started: Boolean
   private gameEnded: Boolean
   private ship: Phaser.GameObjects.Rectangle
+  private sparkler: Phaser.GameObjects.Particles.ParticleEmitter
   private obstacles: Phaser.GameObjects.Polygon[]
   private gapPercent: number
 
@@ -42,14 +43,15 @@ export class GameScene extends Phaser.Scene {
     const windowWidth = window.innerWidth
     const windowHeight = window.innerHeight
 
-    this.ship = this.add.rectangle(windowWidth / 4, windowHeight * 0.9, 0, 0, 0xFF0000)
+    this.ship = this.add.rectangle(windowWidth / 4, windowHeight * 0.9, 5, 5, 0xFFFFFF).setAngle(45)
     this.ship.scrollFactorX = 0
     this.physics.add.existing(this.ship)
     const body = this.ship.body as Phaser.Physics.Arcade.Body
     body.setCollideWorldBounds(true)
+    body.setSize(1, 1)
     body.moves = false
 
-    this.createSparklerParticleEmitter()
+    this.sparkler = this.createSparklerParticleEmitter()
 
     this.obstacles = [] = this.makeObstaclePair(windowWidth * 0.75, this.gapPercent)
   }
@@ -63,6 +65,8 @@ export class GameScene extends Phaser.Scene {
     if (!this.started && this.cursors.up.isDown) {
       body.moves = true
       this.started = true
+      this.sparkler.setGravityX(-1000)
+      this.sparkler.setAngle({ min: 180 - 60, max: 180 + 60 })
     }
 
     const accelerationY = this.cursors.up.isDown ? -700 : 0
@@ -110,29 +114,35 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
-  private createSparklerParticleEmitter(): void {
+  private createSparklerParticleEmitter(): Phaser.GameObjects.Particles.ParticleEmitter {
     const particles = this.add.particles('star')
     const emitter = particles.createEmitter({
       follow: this.ship,
-      angle: { min: 180 - 45, max: 180 + 45 },
+      followOffset: { x: -3 },
       alpha: { start: 1, end: 0.5 },
       scale: { start: 0.1, end: 0.01 },
-      lifespan: 1000,
-      speed: 100,
-      frequency: 50,
+      blendMode: 'ADD',
+      lifespan: 400,
+      quantity: 2,
+      speed: 200,
+      frequency: 80,
       tint: [
         0xffffff,
+        0x00ffff,
         0xff00ff,
-        0xffff00,
+        0x0000ff,
         0x90ee90
       ]
     })
     emitter.setScrollFactor(0)
+    return emitter
   }
 
   private createBurstParticleEmitter(x: number, y: number): void {
     const particles = this.add.particles('star')
     const emitter = particles.createEmitter({
+      accelerationX: 50,
+      accelerationY: 50,
       angle: { start: 0, end: 360, steps: 8 },
       alpha: { start: 1, end: 0.5 },
       speed: { start: 800, end: 200, steps: 5 },
