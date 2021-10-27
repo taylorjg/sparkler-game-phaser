@@ -21,6 +21,7 @@ export class GameScene extends Phaser.Scene {
 
   public preload() {
     this.load.atlas('flares', 'assets/particles/flares.png', 'assets/particles/flares.json')
+    this.load.image('star', 'assets/particles/star_06.png')
   }
 
   public create() {
@@ -108,15 +109,20 @@ export class GameScene extends Phaser.Scene {
   }
 
   private burst(x: number, y: number): void {
-    const particles = this.add.particles('flares')
+    const particles = this.add.particles('star')
     const emitter = particles.createEmitter({
-      frame: ['white', 'blue', 'green', 'yellow'],
       angle: { start: 0, end: 360, steps: 8 },
       lifespan: 250,
-      scale: 0.1
+      scale: 0.04,
+      tint: [
+        0xffffff,
+        0xff00ff,
+        0xffff00,
+        0x90ee90
+      ]
     })
-    const initialSpeed = 250
-    const speedIncrement = 250
+    const initialSpeed = 500
+    const speedIncrement = 100
     for (const index of [0, 1, 2, 3, 4]) {
       emitter.setSpeed(initialSpeed + index * speedIncrement)
       emitter.explode(8, x + 10, y)
