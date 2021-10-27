@@ -42,12 +42,14 @@ export class GameScene extends Phaser.Scene {
     const windowWidth = window.innerWidth
     const windowHeight = window.innerHeight
 
-    this.ship = this.add.rectangle(windowWidth / 4, windowHeight / 2, 20, 20, 0xFF0000)
+    this.ship = this.add.rectangle(windowWidth / 4, windowHeight * 0.9, 0, 0, 0xFF0000)
     this.ship.scrollFactorX = 0
     this.physics.add.existing(this.ship)
     const body = this.ship.body as Phaser.Physics.Arcade.Body
     body.setCollideWorldBounds(true)
     body.moves = false
+
+    this.createSparklerParticleEmitter()
 
     this.obstacles = [] = this.makeObstaclePair(windowWidth * 0.75, this.gapPercent)
   }
@@ -92,8 +94,7 @@ export class GameScene extends Phaser.Scene {
     })
     if (obstacleCleared) {
       this.game.events.emit(SparklerGameEvents.ObstacleCleared)
-      this.burst(this.ship.x, this.ship.y)
-      // this.burst(shipX, shipY)
+      this.createBurstParticleEmitter(this.ship.x, this.ship.y)
     }
 
     const obstacleGone = this.obstacles.some(obstacle => {
@@ -109,23 +110,38 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
-  private burst(x: number, y: number): void {
+  private createSparklerParticleEmitter(): void {
     const particles = this.add.particles('star')
     const emitter = particles.createEmitter({
-      angle: { start: 0, end: 360, steps: 8 },
+      follow: this.ship,
+      angle: { min: 180 - 45, max: 180 + 45 },
       alpha: { start: 1, end: 0.5 },
-      speed: { start: 800, end: 200, steps: 5 },
-      scale: { start: 0.04, end: 0.01 },
-      lifespan: 800,
-      frequency: 80,
-      quantity: 8,
-      maxParticles: 5 * 8,
+      scale: { start: 0.1, end: 0.01 },
+      lifespan: 1000,
+      speed: 100,
+      frequency: 50,
       tint: [
         0xffffff,
         0xff00ff,
         0xffff00,
         0x90ee90
       ]
+    })
+    emitter.setScrollFactor(0)
+  }
+
+  private createBurstParticleEmitter(x: number, y: number): void {
+    const particles = this.add.particles('star')
+    const emitter = particles.createEmitter({
+      angle: { start: 0, end: 360, steps: 8 },
+      alpha: { start: 1, end: 0.5 },
+      speed: { start: 800, end: 200, steps: 5 },
+      scale: { start: 0.06, end: 0.01 },
+      lifespan: 800,
+      frequency: 80,
+      quantity: 8,
+      maxParticles: 5 * 8,
+      tint: 0xffffff
     })
     emitter.setScrollFactor(0)
     emitter.explode(40, x, y)
