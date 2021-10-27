@@ -88,11 +88,12 @@ export class GameScene extends Phaser.Scene {
     const obstacleCleared = this.obstacles.some(obstacle => {
       const right = Phaser.Geom.Polygon.GetAABB(obstacle.geom).right
       const dx = shipX - right
-      return dx >= 0 && dx <= SCROLL_X_SPEED / 2
+      return dx >= 0 && dx <= SCROLL_X_SPEED * 0.9
     })
     if (obstacleCleared) {
       this.game.events.emit(SparklerGameEvents.ObstacleCleared)
-      this.burst(shipX, shipY)
+      this.burst(this.ship.x, this.ship.y)
+      // this.burst(shipX, shipY)
     }
 
     const obstacleGone = this.obstacles.some(obstacle => {
@@ -112,8 +113,13 @@ export class GameScene extends Phaser.Scene {
     const particles = this.add.particles('star')
     const emitter = particles.createEmitter({
       angle: { start: 0, end: 360, steps: 8 },
-      lifespan: 250,
-      scale: 0.04,
+      alpha: { start: 1, end: 0.5 },
+      speed: { start: 800, end: 200, steps: 5 },
+      scale: { start: 0.04, end: 0.01 },
+      lifespan: 800,
+      frequency: 80,
+      quantity: 8,
+      maxParticles: 5 * 8,
       tint: [
         0xffffff,
         0xff00ff,
@@ -121,12 +127,8 @@ export class GameScene extends Phaser.Scene {
         0x90ee90
       ]
     })
-    const initialSpeed = 500
-    const speedIncrement = 100
-    for (const index of [0, 1, 2, 3, 4]) {
-      emitter.setSpeed(initialSpeed + index * speedIncrement)
-      emitter.explode(8, x + 10, y)
-    }
+    emitter.setScrollFactor(0)
+    emitter.explode(40, x, y)
   }
 
   private resize(): void {
