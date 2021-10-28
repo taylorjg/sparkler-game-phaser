@@ -4,15 +4,21 @@ import { SparklerGameEvents } from './constants'
 const SCROLL_X_SPEED = 8
 const UPSTRUST = -1500
 const OBSTACLE_WIDTH = 80
+const OBSTACLE_LINE_WIDTH = 2
 const INITIAL_GAP_PERCENT = 30
 const MIN_GAP_PERCENT = 10
 const TAPPED_UPDATE_COUNT_RESET_THRESHOLD = 5
 
+enum GameState {
+  Waiting,
+  Running
+}
+
 export class GameScene extends Phaser.Scene {
 
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys
-  private started: boolean
-  private gameEnded: boolean
+  private gameState: GameState
+  private firstStart: boolean
   private tapped: boolean
   private tappedUpdateCount: number
   private ship: Phaser.GameObjects.Rectangle
@@ -31,8 +37,8 @@ export class GameScene extends Phaser.Scene {
 
   public create() {
     this.cursors = this.input.keyboard.createCursorKeys()
-    this.started = false
-    this.gameEnded = false
+    this.gameState = GameState.Waiting
+    this.firstStart = true
     this.tapped = false
     this.tappedUpdateCount = 0
     this.gapPercent = INITIAL_GAP_PERCENT
@@ -59,32 +65,47 @@ export class GameScene extends Phaser.Scene {
 
     this.sparkler = this.createSparklerParticleEmitter()
 
-    this.obstacles = [] = this.makeObstaclePair(windowWidth * 0.75, this.gapPercent)
+    this.obstacles = this.makeObstaclePair(windowWidth * 0.75, this.gapPercent)
 
     this.input.on(Phaser.Input.Events.POINTER_DOWN, this.onPointerDown, this)
   }
 
   public update(_time: number, _delta: number) {
 
-    if (this.gameEnded) return
-
+    const windowWidth = window.innerWidth
+    const windowHeight = window.innerHeight
     const body = this.ship.body as Phaser.Physics.Arcade.Body
 
-    if (!this.started && (this.cursors.up.isDown || this.tapped)) {
+    // One of the following:
+    // - the UP ARROW key is pressed
+    // - the screen has been clicked or tapped
+    // - (later) a certain level of sound has been picked up by the microphone
+    const gotInputStimulus = this.cursors.up.isDown || this.tapped
+
+    if (this.gameState == GameState.Waiting && gotInputStimulus) {
+
+      if (this.firstStart) {
+        this.sparkler.setGravityX(-1000)
+        this.sparkler.setAngle({ min: 180 - 60, max: 180 + 60 })
+        this.firstStart = false
+      }
+
       body.moves = true
-      this.started = true
-      this.sparkler.setGravityX(-1000)
-      this.sparkler.setAngle({ min: 180 - 60, max: 180 + 60 })
+      this.cameras.main.scrollX = 0
+      this.ship.y = windowHeight * 0.9
+      this.gapPercent = INITIAL_GAP_PERCENT
+      this.obstacles.forEach(obstacle => obstacle.destroy())
+      this.obstacles = this.makeObstaclePair(windowWidth * 0.75, this.gapPercent)
+      this.gameState = GameState.Running
+      this.game.events.emit(SparklerGameEvents.GameStarted)
     }
 
-    const accelerationY = (this.cursors.up.isDown || this.tapped) ? UPSTRUST : 0
-    body.setAccelerationY(accelerationY)
-
-    if (this.started) {
+    if (this.gameState == GameState.Running) {
+      const accelerationY = gotInputStimulus ? UPSTRUST : 0
+      body.setAccelerationY(accelerationY)
       this.cameras.main.scrollX += SCROLL_X_SPEED
+      this.checkForCollision()
     }
-
-    this.checkForCollision()
 
     if (this.tapped) {
       if (this.tappedUpdateCount >= TAPPED_UPDATE_COUNT_RESET_THRESHOLD) {
@@ -106,7 +127,7 @@ export class GameScene extends Phaser.Scene {
 
     const collision = this.obstacles.some(obstacle => obstacle.geom.contains(shipX, shipY))
     if (collision) {
-      this.gameEnded = true
+      this.gameState = GameState.Waiting
       const body = this.ship.body as Phaser.Physics.Arcade.Body
       body.moves = false
       this.game.events.emit(SparklerGameEvents.GameEnded)
@@ -132,7 +153,9 @@ export class GameScene extends Phaser.Scene {
         this.gapPercent -= 2
       }
       const windowWidth = window.innerWidth
-      this.obstacles = [] = this.makeObstaclePair(this.cameras.main.scrollX + windowWidth + OBSTACLE_WIDTH + 10, this.gapPercent)
+      this.obstacles.forEach(obstacle => obstacle.destroy())
+      const obstacleX = this.cameras.main.scrollX + windowWidth + OBSTACLE_WIDTH + OBSTACLE_LINE_WIDTH
+      this.obstacles = [] = this.makeObstaclePair(obstacleX, this.gapPercent)
     }
   }
 
@@ -200,7 +223,7 @@ export class GameScene extends Phaser.Scene {
       polygon.closePath = false
       polygon.setOrigin(0, 0)
       polygon.isStroked = true
-      polygon.lineWidth = 2
+      polygon.lineWidth = OBSTACLE_LINE_WIDTH
       polygon.strokeColor = 0xFFFFFF
       return polygon
     }

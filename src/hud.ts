@@ -25,8 +25,9 @@ export class HUDScene extends Phaser.Scene {
   }
 
   public create() {
-    this.game.events.on(SparklerGameEvents.ObstacleCleared, this.onObstacleCleared, this)
+    this.game.events.on(SparklerGameEvents.GameStarted, this.onGameStarted, this)
     this.game.events.on(SparklerGameEvents.GameEnded, this.onGameEnded, this)
+    this.game.events.on(SparklerGameEvents.ObstacleCleared, this.onObstacleCleared, this)
 
     this.scoreText = this.add.text(0, 0, '', TEXT_STYLE)
     this.rexUI.add.sizer({
@@ -37,10 +38,12 @@ export class HUDScene extends Phaser.Scene {
       .layout()
 
     this.gameOverPanel = this.rexUI.add.sizer({
-      orientation: 'horizontal',
-      anchor: { centerX: 'center', centerY: 'center' }
+      orientation: 'vertical',
+      anchor: { centerX: 'center', centerY: 'center' },
+      space: { item: 100 }
     })
       .add(this.add.text(0, 0, 'GAME OVER', TEXT_STYLE))
+      .add(this.add.text(0, 0, 'TAP TO RESTART', TEXT_STYLE))
       .setVisible(false)
       .layout()
 
@@ -51,12 +54,18 @@ export class HUDScene extends Phaser.Scene {
     this.scoreText.setText(`${this.score}`)
   }
 
-  private onObstacleCleared(): void {
-    this.score++
+  private onGameStarted(): void {
+    this.score = 0
     this.updateScoreText()
+    this.gameOverPanel.setVisible(false)
   }
 
   private onGameEnded(): void {
     this.gameOverPanel.setVisible(true)
+  }
+
+  private onObstacleCleared(): void {
+    this.score++
+    this.updateScoreText()
   }
 }
