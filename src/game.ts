@@ -1,17 +1,20 @@
 import * as Phaser from 'phaser'
 import { SparklerGameEvents } from './constants'
 
-const SCROLL_X_SPEED = 10
+const SCROLL_X_SPEED = 8
 const UPSTRUST = -1500
 const OBSTACLE_WIDTH = 80
 const INITIAL_GAP_PERCENT = 30
 const MIN_GAP_PERCENT = 10
+const TAPPED_UPDATE_COUNT_RESET_THRESHOLD = 5
 
 export class GameScene extends Phaser.Scene {
 
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys
-  private started: Boolean
-  private gameEnded: Boolean
+  private started: boolean
+  private gameEnded: boolean
+  private tapped: boolean
+  private tappedUpdateCount: number
   private ship: Phaser.GameObjects.Rectangle
   private sparkler: Phaser.GameObjects.Particles.ParticleEmitter
   private obstacles: Phaser.GameObjects.Polygon[]
@@ -30,6 +33,8 @@ export class GameScene extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys()
     this.started = false
     this.gameEnded = false
+    this.tapped = false
+    this.tappedUpdateCount = 0
     this.gapPercent = INITIAL_GAP_PERCENT
 
     const searchParams = new URLSearchParams(window.location.search)
@@ -55,6 +60,8 @@ export class GameScene extends Phaser.Scene {
     this.sparkler = this.createSparklerParticleEmitter()
 
     this.obstacles = [] = this.makeObstaclePair(windowWidth * 0.75, this.gapPercent)
+
+    this.input.on(Phaser.Input.Events.POINTER_DOWN, this.onPointerDown, this)
   }
 
   public update(_time: number, _delta: number) {
@@ -63,20 +70,34 @@ export class GameScene extends Phaser.Scene {
 
     const body = this.ship.body as Phaser.Physics.Arcade.Body
 
-    if (!this.started && this.cursors.up.isDown) {
+    if (!this.started && (this.cursors.up.isDown || this.tapped)) {
       body.moves = true
       this.started = true
       this.sparkler.setGravityX(-1000)
       this.sparkler.setAngle({ min: 180 - 60, max: 180 + 60 })
     }
 
-    const accelerationY = this.cursors.up.isDown ? UPSTRUST : 0
+    const accelerationY = (this.cursors.up.isDown || this.tapped) ? UPSTRUST : 0
     body.setAccelerationY(accelerationY)
+
     if (this.started) {
       this.cameras.main.scrollX += SCROLL_X_SPEED
     }
 
     this.checkForCollision()
+
+    if (this.tapped) {
+      if (this.tappedUpdateCount >= TAPPED_UPDATE_COUNT_RESET_THRESHOLD) {
+        this.tapped = false
+        this.tappedUpdateCount = 0
+      } else {
+        this.tappedUpdateCount++
+      }
+    }
+  }
+
+  private onPointerDown() {
+    this.tapped = true
   }
 
   private checkForCollision(): void {
