@@ -1,10 +1,11 @@
 import * as Phaser from 'phaser'
 import { SparklerGameEvents } from './constants'
 
-const SCROLL_X_SPEED = 5
+const SCROLL_X_SPEED = 10
+const UPSTRUST = -1500
 const OBSTACLE_WIDTH = 80
 const INITIAL_GAP_PERCENT = 30
-const MIN_GAP_PERCENT = 5
+const MIN_GAP_PERCENT = 10
 
 export class GameScene extends Phaser.Scene {
 
@@ -69,7 +70,7 @@ export class GameScene extends Phaser.Scene {
       this.sparkler.setAngle({ min: 180 - 60, max: 180 + 60 })
     }
 
-    const accelerationY = this.cursors.up.isDown ? -700 : 0
+    const accelerationY = this.cursors.up.isDown ? UPSTRUST : 0
     body.setAccelerationY(accelerationY)
     if (this.started) {
       this.cameras.main.scrollX += SCROLL_X_SPEED
