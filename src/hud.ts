@@ -3,8 +3,7 @@ import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin'
 import { SparklerGameEvents } from './constants'
 
 const TEXT_STYLE = {
-  // fontFamily: 'VectorBattle',
-  fontFamily: 'Verdana',
+  fontFamily: 'VectorBattle',
   fontSize: '4rem',
   fontStyle: 'bold',
   color: 'purple'
