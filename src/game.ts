@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser'
 import { SparklerGameEvents } from './constants'
+import configureMicrophoneModule from './microphone.js'
 
 const SCROLL_X_SPEED = 8
 const UPSTRUST = -1500
@@ -8,6 +9,7 @@ const OBSTACLE_LINE_WIDTH = 2
 const INITIAL_GAP_PERCENT = 30
 const MIN_GAP_PERCENT = 10
 const TAPPED_UPDATE_COUNT_RESET_THRESHOLD = 5
+const NOISED_UPDATE_COUNT_RESET_THRESHOLD = 5
 
 enum GameState {
   Waiting,
@@ -21,13 +23,24 @@ export class GameScene extends Phaser.Scene {
   private firstStart: boolean
   private tapped: boolean
   private tappedUpdateCount: number
+  private noised: boolean
+  private noisedUpdateCount: number
   private ship: Phaser.GameObjects.Rectangle
   private sparkler: Phaser.GameObjects.Particles.ParticleEmitter
   private obstacles: Phaser.GameObjects.Polygon[]
   private gapPercent: number
+  private microphoneModule: {
+    microphoneOn: () => Promise<void>,
+    microphoneOff: () => void
+  }
 
   public constructor() {
     super('Game')
+    const microphoneModuleConfig = {
+      NOISE_LEVEL_THRESHOLD: 0.5,
+      applyBoost: this.onMicrophoneStimulus.bind(this)
+    }
+    this.microphoneModule = configureMicrophoneModule(microphoneModuleConfig)
   }
 
   public preload() {
@@ -41,6 +54,8 @@ export class GameScene extends Phaser.Scene {
     this.firstStart = true
     this.tapped = false
     this.tappedUpdateCount = 0
+    this.noised = false
+    this.noisedUpdateCount = 0
     this.gapPercent = INITIAL_GAP_PERCENT
 
     const searchParams = new URLSearchParams(window.location.search)
@@ -68,6 +83,9 @@ export class GameScene extends Phaser.Scene {
     this.obstacles = this.makeObstaclePair(windowWidth * 0.75, this.gapPercent)
 
     this.input.on(Phaser.Input.Events.POINTER_DOWN, this.onPointerDown, this)
+
+    this.game.events.on(SparklerGameEvents.MicrophoneOn, this.onMicrophoneOn, this)
+    this.game.events.on(SparklerGameEvents.MicrophoneOff, this.onMicrophoneOff, this)
   }
 
   public update(_time: number, _delta: number) {
@@ -80,7 +98,7 @@ export class GameScene extends Phaser.Scene {
     // - the UP ARROW key is pressed
     // - the screen has been clicked or tapped
     // - (later) a certain level of sound has been picked up by the microphone
-    const gotInputStimulus = this.cursors.up.isDown || this.tapped
+    const gotInputStimulus = this.cursors.up.isDown || this.tapped || this.noised
 
     if (this.gameState == GameState.Waiting && gotInputStimulus) {
 
@@ -115,10 +133,33 @@ export class GameScene extends Phaser.Scene {
         this.tappedUpdateCount++
       }
     }
+
+    if (this.noised) {
+      if (this.noisedUpdateCount >= NOISED_UPDATE_COUNT_RESET_THRESHOLD) {
+        this.noised = false
+        this.noisedUpdateCount = 0
+      } else {
+        this.noisedUpdateCount++
+      }
+    }
   }
 
   private onPointerDown() {
     this.tapped = true
+  }
+
+  private onMicrophoneStimulus(_maxValue: number) {
+    this.noised = true
+  }
+
+  private onMicrophoneOn(): void {
+    console.log('[onMicrophoneOn]')
+    this.microphoneModule.microphoneOn()
+  }
+
+  private onMicrophoneOff(): void {
+    console.log('[onMicrophoneOff]')
+    this.microphoneModule.microphoneOff()
   }
 
   private checkForCollision(): void {

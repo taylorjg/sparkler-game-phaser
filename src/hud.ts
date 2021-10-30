@@ -12,6 +12,7 @@ export class HUDScene extends Phaser.Scene {
   private score: number
   private scoreText: Phaser.GameObjects.BitmapText
   private gameOverPanel: RexUIPlugin.Sizer
+  private muteLine: Phaser.GameObjects.Line
 
   public constructor() {
     super({
@@ -23,6 +24,7 @@ export class HUDScene extends Phaser.Scene {
 
   public preload() {
     this.load.bitmapFont(FONT_KEY, 'assets/fonts/arcade.png', 'assets/fonts/arcade.xml')
+    this.load.image('microphone', 'assets/icons/66-microphone@2x.png')
   }
 
   public create() {
@@ -47,8 +49,32 @@ export class HUDScene extends Phaser.Scene {
       .add(this.add.bitmapText(0, 0, FONT_KEY, 'TAP TO RESTART', FONT_SIZE).setTint(FONT_COLOUR))
       .setVisible(false)
       .layout()
-
     this.updateScoreText()
+
+    const microphone = this.add.image(0, 0, 'microphone')
+      .setOrigin(1, 1)
+      .setInteractive({ useHandCursor: true })
+      .on(Phaser.Input.Events.POINTER_DOWN, this.onClickMicrophone, this)
+    const microphoneWidth = microphone.width
+    const microphoneHeight = microphone.height
+    this.muteLine = this.add.line(0, 0, microphoneWidth, 0, 0, microphoneHeight, 0xff0000).setOrigin(1, 1).setLineWidth(3)
+    const microphoneIconContainer = this.add.container(0, 0, [microphone, this.muteLine]).setScale(.75)
+    this.rexUI.add.sizer({
+      orientation: 'horizontal',
+      anchor: { right: 'right-20', bottom: 'bottom-20' }
+    })
+      .add(microphoneIconContainer)
+      .layout()
+  }
+
+  private onClickMicrophone(): void {
+    if (this.muteLine.visible) {
+      this.muteLine.setVisible(false)
+      this.game.events.emit(SparklerGameEvents.MicrophoneOn)
+    } else {
+      this.muteLine.setVisible(true)
+      this.game.events.emit(SparklerGameEvents.MicrophoneOff)
+    }
   }
 
   private updateScoreText(): void {
@@ -63,6 +89,10 @@ export class HUDScene extends Phaser.Scene {
 
   private onGameEnded(): void {
     this.gameOverPanel.setVisible(true)
+    if (!this.muteLine.visible) {
+      this.muteLine.setVisible(true)
+      this.game.events.emit(SparklerGameEvents.MicrophoneOff)
+    }
   }
 
   private onObstacleCleared(): void {

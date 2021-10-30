@@ -29,12 +29,9 @@ module.exports = {
   plugins: [
     new CopyPlugin({
       patterns: [
-        {
-          from: 'src/index.html'
-        },
-        {
-          from: 'assets/**/*'
-        }
+        { from: 'src/index.html' },
+        { from: 'src/stream-processor.js' },
+        { from: 'assets/**/*' }
       ]
     }),
     new webpack.DefinePlugin({
