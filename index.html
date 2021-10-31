@@ -5,11 +5,6 @@
   <title>Sparkler Game</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
   <style>
-    @font-face {
-      font-family: VectorBattle;
-      src: url("assets/fonts/VectorBattle-e9XO.ttf");
-    }
-
     html,
     body,
     canvas {
@@ -17,20 +12,20 @@
       padding: 0 !important;
       overflow: hidden !important;
     }
-
-    #ttf-workaround {
-      font-family: VectorBattle;
-      color: black;
-      position: absolute;
-      top: 0;
-      left: 0;
+    #version {
+      color: #ffffff;
+      font-size: x-small;
+      font-style: italic;
+      position: fixed;
+      left: .5rem;
+      bottom: .5rem;
     }
   </style>
 </head>
 
 <body>
-  <span id="ttf-workaround">&nbsp;</span>
   <div id="game"></div>
+  <span id=version></span>
   <script src="main.bundle.js"></script>
 </body>
 
