@@ -4,16 +4,21 @@ import { promisifyDelayedCall } from '../promisifyThings'
 import * as C from '../constants'
 import * as T from '../types'
 
+const SHOW_MICROPHONE_ERROR_FOR = 5000
+const AUTO_TURN_OFF_PERIOD = 10000
+
 export class MicrophonePanel {
 
   private icon: Phaser.GameObjects.Image
   private muteLine: Phaser.GameObjects.Line
   private microphonePanel: RexUIPlugin.Sizer
   private scene: T.SceneWithRexUI
+  private autoTurnOffTimeoutId: NodeJS.Timeout
 
   public constructor(scene: T.SceneWithRexUI) {
 
     this.scene = scene
+    this.autoTurnOffTimeoutId = null
 
     this.icon = scene.add.image(0, 0, 'microphone')
       .setOrigin(1, 1)
@@ -35,6 +40,7 @@ export class MicrophonePanel {
       .layout()
 
     this.scene.game.events.on(C.SparklerGameEvents.MicrophoneError, this.onMicrophoneError, this)
+    this.scene.game.events.on(C.SparklerGameEvents.GameStarted, this.onGameStarted, this)
     this.scene.game.events.on(C.SparklerGameEvents.GameEnded, this.onGameEnded, this)
   }
 
@@ -61,6 +67,7 @@ export class MicrophonePanel {
   }
 
   private async onMicrophoneError(errorMessage: string): Promise<void> {
+
     this.microphonePanel.setVisible(false)
 
     const textLine1 = this.scene.add.bitmapText(0, 0, C.FONT_KEY, 'Failed to turn on microphone', C.FONT_SIZE_SMALL)
@@ -76,14 +83,30 @@ export class MicrophonePanel {
       .add(textLine1)
       .add(textLine2)
       .layout()
-    await promisifyDelayedCall(this.scene, 5 * 1000)
+
+    await promisifyDelayedCall(this.scene, SHOW_MICROPHONE_ERROR_FOR)
+
     sizer.removeAll(true)
     sizer.destroy(true)
   }
 
+  private onGameStarted(): void {
+    clearTimeout(this.autoTurnOffTimeoutId)
+    this.autoTurnOffTimeoutId = null
+  }
+
   private onGameEnded(): void {
-    if (!this.muted) {
-      this.becomeMuted()
+
+    clearTimeout(this.autoTurnOffTimeoutId)
+    this.autoTurnOffTimeoutId = null
+
+    const callback = () => {
+      if (!this.muted) {
+        this.becomeMuted()
+      }
+      this.autoTurnOffTimeoutId = null
     }
+
+    this.autoTurnOffTimeoutId = setTimeout(callback, AUTO_TURN_OFF_PERIOD)
   }
 }
