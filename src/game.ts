@@ -11,6 +11,11 @@ const MIN_GAP_PERCENT = 10
 const TAPPED_UPDATE_COUNT_RESET_THRESHOLD = 5
 const NOISED_UPDATE_COUNT_RESET_THRESHOLD = 5
 
+interface MicrophoneModule {
+  microphoneOn: () => Promise<void>,
+  microphoneOff: () => void
+}
+
 enum GameState {
   Waiting,
   Running
@@ -29,16 +34,13 @@ export class GameScene extends Phaser.Scene {
   private sparkler: Phaser.GameObjects.Particles.ParticleEmitter
   private obstacles: Phaser.GameObjects.Polygon[]
   private gapPercent: number
-  private microphoneModule: {
-    microphoneOn: () => Promise<void>,
-    microphoneOff: () => void
-  }
+  private microphoneModule: MicrophoneModule
 
   public constructor() {
     super('Game')
     const microphoneModuleConfig = {
       NOISE_LEVEL_THRESHOLD: 0.5,
-      applyBoost: this.onMicrophoneStimulus.bind(this)
+      onNoiseLevelAboveThreshold: this.onMicrophoneStimulus.bind(this)
     }
     this.microphoneModule = configureMicrophoneModule(microphoneModuleConfig)
   }
@@ -152,9 +154,14 @@ export class GameScene extends Phaser.Scene {
     this.noised = true
   }
 
-  private onMicrophoneOn(): void {
+  private async onMicrophoneOn(): Promise<void> {
     console.log('[onMicrophoneOn]')
-    this.microphoneModule.microphoneOn()
+    try {
+      await this.microphoneModule.microphoneOn()
+    } catch (error) {
+      console.error('[onMicrophoneOn]', error.message)
+      this.game.events.emit(SparklerGameEvents.MicrophoneError, error.message)
+    }
   }
 
   private onMicrophoneOff(): void {

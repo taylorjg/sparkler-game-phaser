@@ -3,5 +3,6 @@ export const enum SparklerGameEvents {
   GameEnded = 'GameEnded',
   ObstacleCleared = 'ObstacleCleared',
   MicrophoneOn = 'MicrophoneOn',
-  MicrophoneOff = 'MicrophoneOff'
+  MicrophoneOff = 'MicrophoneOff',
+  MicrophoneError = 'MicrophoneError'
 }

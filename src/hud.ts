@@ -1,9 +1,11 @@
 import * as Phaser from 'phaser'
 import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin'
 import { SparklerGameEvents } from './constants'
+import { promisifyDelayedCall } from './promisifyThings'
 
 const FONT_KEY = 'arcade'
 const FONT_SIZE = 48
+const FONT_SIZE_SMALL = 16
 const FONT_COLOUR = 0x800080
 
 export class HUDScene extends Phaser.Scene {
@@ -12,6 +14,8 @@ export class HUDScene extends Phaser.Scene {
   private score: number
   private scoreText: Phaser.GameObjects.BitmapText
   private gameOverPanel: RexUIPlugin.Sizer
+  private microphoneIcon: Phaser.GameObjects.Image
+  private microphonePanel: RexUIPlugin.Sizer
   private muteLine: Phaser.GameObjects.Line
 
   public constructor() {
@@ -31,6 +35,7 @@ export class HUDScene extends Phaser.Scene {
     this.game.events.on(SparklerGameEvents.GameStarted, this.onGameStarted, this)
     this.game.events.on(SparklerGameEvents.GameEnded, this.onGameEnded, this)
     this.game.events.on(SparklerGameEvents.ObstacleCleared, this.onObstacleCleared, this)
+    this.game.events.on(SparklerGameEvents.MicrophoneError, this.onMicrophoneError, this)
 
     this.scoreText = this.add.bitmapText(0, 0, FONT_KEY, '', FONT_SIZE).setTint(FONT_COLOUR)
     this.rexUI.add.sizer({
@@ -51,15 +56,15 @@ export class HUDScene extends Phaser.Scene {
       .layout()
     this.updateScoreText()
 
-    const microphone = this.add.image(0, 0, 'microphone')
+    this.microphoneIcon = this.add.image(0, 0, 'microphone')
       .setOrigin(1, 1)
       .setInteractive({ useHandCursor: true })
       .on(Phaser.Input.Events.POINTER_DOWN, this.onClickMicrophone, this)
-    const microphoneWidth = microphone.width
-    const microphoneHeight = microphone.height
-    this.muteLine = this.add.line(0, 0, microphoneWidth, 0, 0, microphoneHeight, 0xff0000).setOrigin(1, 1).setLineWidth(3)
-    const microphoneIconContainer = this.add.container(0, 0, [microphone, this.muteLine]).setScale(.75)
-    this.rexUI.add.sizer({
+    const microphoneIconWidth = this.microphoneIcon.width
+    const microphoneIconHeight = this.microphoneIcon.height
+    this.muteLine = this.add.line(0, 0, microphoneIconWidth, 0, 0, microphoneIconHeight, 0xff0000).setOrigin(1, 1).setLineWidth(3)
+    const microphoneIconContainer = this.add.container(0, 0, [this.microphoneIcon, this.muteLine]).setScale(.75)
+    this.microphonePanel = this.rexUI.add.sizer({
       orientation: 'horizontal',
       anchor: { right: 'right-20', bottom: 'bottom-20' }
     })
@@ -75,6 +80,23 @@ export class HUDScene extends Phaser.Scene {
       this.muteLine.setVisible(true)
       this.game.events.emit(SparklerGameEvents.MicrophoneOff)
     }
+  }
+
+  private async onMicrophoneError(errorMessage: string): Promise<void> {
+    this.microphonePanel.setVisible(false)
+    const text1 = this.add.bitmapText(0, 0, FONT_KEY, 'Failed to turn on microphone', FONT_SIZE_SMALL).setTint(FONT_COLOUR)
+    const text2 = this.add.bitmapText(0, 0, FONT_KEY, errorMessage, FONT_SIZE_SMALL).setTint(FONT_COLOUR)
+    const sizer = this.rexUI.add.sizer({
+      orientation: 'vertical',
+      anchor: { centerX: 'center', bottom: 'bottom-20' },
+      space: { item: 20 }
+    })
+      .add(text1)
+      .add(text2)
+      .layout()
+    await promisifyDelayedCall(this, 5 * 1000)
+    sizer.removeAll(true)
+    sizer.destroy(true)
   }
 
   private updateScoreText(): void {

@@ -3,6 +3,18 @@ import log from 'loglevel'
 
 const max = xs => xs.reduce((acc, value) => value > acc ? value : acc)
 
+// type MicrophoneModuleConfig = {
+//   NOISE_LEVEL_THRESHOLD: number,
+//   onNoiseLevelAboveThreshold: (maxValue: number) => void
+// }
+
+// interface MicrophoneModule {
+//   microphoneOn: () => Promise<void>
+//   microphoneOff: () => void
+// }
+
+// type ConfigureMicrophoneModule = (config: MicrophoneModuleConfig) => MicrophoneModule
+
 export default config => {
 
   const audioState = {
@@ -22,7 +34,7 @@ export default config => {
         const channelData = message.data
         const maxValue = max(channelData)
         if (maxValue >= config.NOISE_LEVEL_THRESHOLD) {
-          config.applyBoost(maxValue)
+          config.onNoiseLevelAboveThreshold(maxValue)
         }
       }
     }
@@ -32,19 +44,24 @@ export default config => {
     try {
       log.info('[microphoneOn]')
       audioState.pending = true
-      const mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      const audioContext = new AudioContext()
-      const source = audioContext.createMediaStreamSource(mediaStream)
-      const moduleUrl = `${location.origin}/stream-processor.js`
-      await audioContext.audioWorklet.addModule(moduleUrl)
-      const streamWorklet = new StreamWorklet(audioContext, 'stream-processor')
-      source.connect(streamWorklet)
-      streamWorklet.connect(audioContext.destination)
-      audioState.audioContext = audioContext
-      audioState.mediaStream = mediaStream
-      audioState.microphoneOn = true
+      if (navigator?.mediaDevices?.getUserMedia) {
+        const mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true })
+        const audioContext = new AudioContext()
+        const source = audioContext.createMediaStreamSource(mediaStream)
+        const moduleUrl = `${location.origin}/stream-processor.js`
+        await audioContext.audioWorklet.addModule(moduleUrl)
+        const streamWorklet = new StreamWorklet(audioContext, 'stream-processor')
+        source.connect(streamWorklet)
+        streamWorklet.connect(audioContext.destination)
+        audioState.audioContext = audioContext
+        audioState.mediaStream = mediaStream
+        audioState.microphoneOn = true
+      } else {
+        throw new Error('navigator.mediaDevices.getUserMedia not found')
+      }
     } catch (error) {
       log.error(`[microphoneOn] ${error.message}`)
+      throw error
     }
     finally {
       audioState.pending = false
