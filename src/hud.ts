@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser'
 import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin'
 import { ScorePanel } from './components/scorePanel'
-import { MicrophonePanel } from './components/MicrophonePanel'
+import { MicrophonePanel } from './components/microphonePanel'
 import * as C from './constants'
 
 export class HUDScene extends Phaser.Scene {
