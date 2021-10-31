@@ -30,7 +30,10 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         { from: 'src/index.html' },
+        { from: 'src/service-worker.js' },
         { from: 'src/stream-processor.js' },
+        { from: 'src/icon.png' },
+        { from: 'src/manifest.json' },
         { from: 'assets/**/*' }
       ]
     }),

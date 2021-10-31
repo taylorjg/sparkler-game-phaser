@@ -42,8 +42,20 @@ const setVersion = () => {
   document.querySelector('#version').innerHTML = version
 }
 
-const main = () => {
+const registerServiceWorker = async () => {
+  if (navigator.serviceWorker) {
+    try {
+      const registration = await navigator.serviceWorker.register('service-worker.js')
+      console.log('[registerServiceWorker] successfully registered service worker:', registration)
+    } catch (error) {
+      console.error('[registerServiceWorker] failed to register service worker:', error.message)
+    }
+  }
+}
+
+const main = async () => {
   setVersion()
+  await registerServiceWorker()
   new Phaser.Game(gameConfig)
 }
 
