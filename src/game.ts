@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser'
-import { SparklerGameEvents } from './constants'
 import configureMicrophoneModule from './microphone.js'
+import * as C from './constants'
 
 const SCROLL_X_SPEED = 8
 const UPSTRUST = -1500
@@ -86,8 +86,8 @@ export class GameScene extends Phaser.Scene {
 
     this.input.on(Phaser.Input.Events.POINTER_DOWN, this.onPointerDown, this)
 
-    this.game.events.on(SparklerGameEvents.MicrophoneOn, this.onMicrophoneOn, this)
-    this.game.events.on(SparklerGameEvents.MicrophoneOff, this.onMicrophoneOff, this)
+    this.game.events.on(C.SparklerGameEvents.MicrophoneOn, this.onMicrophoneOn, this)
+    this.game.events.on(C.SparklerGameEvents.MicrophoneOff, this.onMicrophoneOff, this)
   }
 
   public update(_time: number, _delta: number) {
@@ -117,7 +117,7 @@ export class GameScene extends Phaser.Scene {
       this.obstacles.forEach(obstacle => obstacle.destroy())
       this.obstacles = this.makeObstaclePair(windowWidth * 0.75, this.gapPercent)
       this.gameState = GameState.Running
-      this.game.events.emit(SparklerGameEvents.GameStarted)
+      this.game.events.emit(C.SparklerGameEvents.GameStarted)
     }
 
     if (this.gameState == GameState.Running) {
@@ -160,7 +160,7 @@ export class GameScene extends Phaser.Scene {
       await this.microphoneModule.microphoneOn()
     } catch (error) {
       console.error('[onMicrophoneOn]', error.message)
-      this.game.events.emit(SparklerGameEvents.MicrophoneError, error.message)
+      this.game.events.emit(C.SparklerGameEvents.MicrophoneError, error.message)
     }
   }
 
@@ -178,7 +178,7 @@ export class GameScene extends Phaser.Scene {
       this.gameState = GameState.Waiting
       const body = this.ship.body as Phaser.Physics.Arcade.Body
       body.moves = false
-      this.game.events.emit(SparklerGameEvents.GameEnded)
+      this.game.events.emit(C.SparklerGameEvents.GameEnded)
       return
     }
 
@@ -188,7 +188,7 @@ export class GameScene extends Phaser.Scene {
       return dx >= 0 && dx <= SCROLL_X_SPEED * 0.9
     })
     if (obstacleCleared) {
-      this.game.events.emit(SparklerGameEvents.ObstacleCleared)
+      this.game.events.emit(C.SparklerGameEvents.ObstacleCleared)
       this.createBurstParticleEmitter(this.ship.x, this.ship.y)
     }
 
