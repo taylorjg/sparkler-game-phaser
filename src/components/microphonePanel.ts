@@ -62,10 +62,12 @@ export class MicrophonePanel {
 
   private async onMicrophoneError(errorMessage: string): Promise<void> {
     this.microphonePanel.setVisible(false)
+
     const textLine1 = this.scene.add.bitmapText(0, 0, C.FONT_KEY, 'Failed to turn on microphone', C.FONT_SIZE_SMALL)
       .setTint(C.FONT_COLOUR)
     const textLine2 = this.scene.add.bitmapText(0, 0, C.FONT_KEY, errorMessage, C.FONT_SIZE_SMALL)
       .setTint(C.FONT_COLOUR)
+
     const sizer = this.scene.rexUI.add.sizer({
       orientation: 'vertical',
       anchor: { centerX: 'center', bottom: 'bottom-20' },
