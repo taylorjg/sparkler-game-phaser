@@ -3,6 +3,7 @@ import * as Phaser from 'phaser'
 import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin'
 import { GameScene } from './game'
 import { HUDScene } from './hud'
+import { version } from '../package.json'
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
   title: 'Sparkler Game',
@@ -37,7 +38,12 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
   }
 }
 
+const setVersion = () => {
+  document.querySelector('#version').innerHTML = version
+}
+
 const main = () => {
+  setVersion()
   new Phaser.Game(gameConfig)
 }
 
