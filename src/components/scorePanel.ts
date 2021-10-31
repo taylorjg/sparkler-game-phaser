@@ -1,13 +1,13 @@
 import * as Phaser from 'phaser'
-import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin'
 import * as C from '../constants'
+import * as T from '../types'
 
 export class ScorePanel {
 
   private score: number
   private scoreText: Phaser.GameObjects.BitmapText
 
-  public constructor(scene: Phaser.Scene & { rexUI: RexUIPlugin }) {
+  public constructor(scene: T.SceneWithRexUI) {
 
     this.scoreText = scene.add.bitmapText(0, 0, C.FONT_KEY, '', C.FONT_SIZE)
       .setTint(C.FONT_COLOUR)
