@@ -4,13 +4,35 @@ This is my attempt to recreate Seb Lee-Delisle's interactive sparkler game as se
 
 ![Stills Collage](images/stills-collage.jpg)
 
-# Instructions
+# Playing Instructions
 
 You can control the game in one of the following ways:
 
 * Using the UP ARROW key
 * By clicking/tapping the window
 * By making some noise (after turning on the microphone by clicking the icon in the bottom right corner of the window)
+
+# Dev Instructions
+
+## Running Locally
+
+```
+npm install
+npm run dev
+```
+
+## Building
+
+```
+rm -rf dist
+npm run build:prod
+```
+
+## Deploying (to gh-pages)
+
+```
+npm run deploy
+```
 
 # Links
 
