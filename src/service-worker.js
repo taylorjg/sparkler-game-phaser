@@ -1,4 +1,8 @@
-const CURRENT_CACHE_NAME = '0.0.16'
+const pos = location.pathname.lastIndexOf('/')
+const pathname = pos >= 0 ? location.pathname.substr(0, pos) : pathname
+const base = location.origin + pathname
+
+const CURRENT_CACHE_NAME = '0.0.17'
 
 const URLS_TO_CACHE = [
   '/',
@@ -19,8 +23,9 @@ self.addEventListener('install', async () => {
   console.log('[service worker install]', 'cache:', cache)
   if (cache) {
     for (const url of URLS_TO_CACHE) {
-      console.log('[service worker install]', 'cache.add:', url)
-      await cache.add(url)
+      const fullUrl = base + url
+      console.log('[service worker install]', 'cache.add:', fullUrl)
+      await cache.add(fullUrl)
     }
   }
 })
