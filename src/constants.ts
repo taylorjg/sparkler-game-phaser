@@ -7,7 +7,19 @@ export const enum SparklerGameEvents {
   MicrophoneError = 'MicrophoneError'
 }
 
-export const FONT_KEY = 'arcade'
-export const FONT_SIZE = 48
-export const FONT_SIZE_SMALL = 16
-export const FONT_COLOUR = 0x800080
+export const enum SceneKeys {
+  Game = 'Game',
+  HUD = 'HUD'
+}
+
+export const enum FontKeys {
+  Arcade = 'arcade'
+}
+
+export const enum ImageKeys {
+  Microphone = 'microphone'
+}
+
+export const enum ParticleKeys {
+  Star = 'star'
+}

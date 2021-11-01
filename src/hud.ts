@@ -11,14 +11,14 @@ export class HUDScene extends Phaser.Scene {
 
   public constructor() {
     super({
-      key: 'HUD',
+      key: C.SceneKeys.HUD,
       active: true
     })
   }
 
   public preload() {
-    this.load.bitmapFont(C.FONT_KEY, 'assets/fonts/arcade.png', 'assets/fonts/arcade.xml')
-    this.load.image('microphone', 'assets/icons/66-microphone@2x.png')
+    this.load.bitmapFont(C.FontKeys.Arcade, 'assets/fonts/arcade.png', 'assets/fonts/arcade.xml')
+    this.load.image(C.ImageKeys.Microphone, 'assets/icons/66-microphone@2x.png')
   }
 
   public create() {

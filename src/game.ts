@@ -37,7 +37,7 @@ export class GameScene extends Phaser.Scene {
   private microphoneModule: MicrophoneModule
 
   public constructor() {
-    super('Game')
+    super(C.SceneKeys.Game)
     const microphoneModuleConfig = {
       NOISE_LEVEL_THRESHOLD: 0.5,
       onNoiseLevelAboveThreshold: this.onMicrophoneStimulus.bind(this)
@@ -46,8 +46,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   public preload() {
-    this.load.atlas('flares', 'assets/particles/flares.png', 'assets/particles/flares.json')
-    this.load.image('star', 'assets/particles/star_06.png')
+    this.load.image(C.ParticleKeys.Star, 'assets/particles/star_06.png')
   }
 
   public create() {
@@ -208,7 +207,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private createSparklerParticleEmitter(): Phaser.GameObjects.Particles.ParticleEmitter {
-    const particles = this.add.particles('star')
+    const particles = this.add.particles(C.ParticleKeys.Star)
     const emitter = particles.createEmitter({
       follow: this.ship,
       followOffset: { x: -3 },
@@ -232,7 +231,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private createBurstParticleEmitter(x: number, y: number): void {
-    const particles = this.add.particles('star')
+    const particles = this.add.particles(C.ParticleKeys.Star)
     const emitter = particles.createEmitter({
       accelerationX: 50,
       accelerationY: 50,

@@ -1,4 +1,5 @@
 import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin'
+import { createTextBig } from '../ui'
 import * as C from '../constants'
 import * as T from '../types'
 
@@ -8,10 +9,8 @@ export class GameOverPanel {
 
   public constructor(scene: T.SceneWithRexUI) {
 
-    const textLine1 = scene.add.bitmapText(0, 0, C.FONT_KEY, 'GAME OVER', C.FONT_SIZE)
-      .setTint(C.FONT_COLOUR)
-    const textLine2 = scene.add.bitmapText(0, 0, C.FONT_KEY, 'TAP TO RESTART', C.FONT_SIZE)
-      .setTint(C.FONT_COLOUR)
+    const textLine1 = createTextBig(scene, 'GAME OVER')
+    const textLine2 = createTextBig(scene, 'TAP TO RESTART')
 
     this.gameOverPanel = scene.rexUI.add.sizer({
       orientation: 'vertical',

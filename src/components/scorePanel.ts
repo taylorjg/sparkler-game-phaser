@@ -1,4 +1,5 @@
 import * as Phaser from 'phaser'
+import { createTextBig } from '../ui'
 import * as C from '../constants'
 import * as T from '../types'
 
@@ -9,11 +10,9 @@ export class ScorePanel {
 
   public constructor(scene: T.SceneWithRexUI) {
 
-    this.scoreText = scene.add.bitmapText(0, 0, C.FONT_KEY, '', C.FONT_SIZE)
-      .setTint(C.FONT_COLOUR)
+    this.scoreText = createTextBig(scene, '')
 
     scene.rexUI.add.sizer({
-      orientation: 'horizontal',
       anchor: { left: 'left+20', top: 'top+20' }
     })
       .add(this.scoreText)

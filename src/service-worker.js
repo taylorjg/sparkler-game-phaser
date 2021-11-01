@@ -1,4 +1,4 @@
-const CURRENT_CACHE_NAME = '0.0.15'
+const CURRENT_CACHE_NAME = '0.0.16'
 
 const URLS_TO_CACHE = [
   '/',
@@ -10,8 +10,6 @@ const URLS_TO_CACHE = [
   '/assets/fonts/arcade.png',
   '/assets/fonts/arcade.xml',
   '/assets/icons/66-microphone@2x.png',
-  '/assets/particles/flares.json',
-  '/assets/particles/flares.png',
   '/assets/particles/star_06.png'
 ]
 

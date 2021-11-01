@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser'
 import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin'
 import { promisifyDelayedCall } from '../promisifyThings'
+import { createTextSmall } from '../ui'
 import * as C from '../constants'
 import * as T from '../types'
 
@@ -20,7 +21,7 @@ export class MicrophonePanel {
     this.scene = scene
     this.autoTurnOffTimeoutId = null
 
-    this.icon = scene.add.image(0, 0, 'microphone')
+    this.icon = scene.add.image(0, 0, C.ImageKeys.Microphone)
       .setOrigin(1, 1)
       .setInteractive({ useHandCursor: true })
       .on(Phaser.Input.Events.POINTER_DOWN, this.onClickMicrophone, this)
@@ -32,8 +33,8 @@ export class MicrophonePanel {
       .setLineWidth(3)
 
     const microphoneIconContainer = scene.add.container(0, 0, [this.icon, this.muteLine]).setScale(.75)
+
     this.microphonePanel = scene.rexUI.add.sizer({
-      orientation: 'horizontal',
       anchor: { right: 'right-20', bottom: 'bottom-20' }
     })
       .add(microphoneIconContainer)
@@ -70,10 +71,8 @@ export class MicrophonePanel {
 
     this.microphonePanel.setVisible(false)
 
-    const textLine1 = this.scene.add.bitmapText(0, 0, C.FONT_KEY, 'Failed to turn on microphone', C.FONT_SIZE_SMALL)
-      .setTint(C.FONT_COLOUR)
-    const textLine2 = this.scene.add.bitmapText(0, 0, C.FONT_KEY, errorMessage, C.FONT_SIZE_SMALL)
-      .setTint(C.FONT_COLOUR)
+    const textLine1 = createTextSmall(this.scene, 'Failed to turn on microphone')
+    const textLine2 = createTextSmall(this.scene, errorMessage)
 
     const sizer = this.scene.rexUI.add.sizer({
       orientation: 'vertical',
