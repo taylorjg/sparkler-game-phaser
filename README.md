@@ -1,6 +1,6 @@
 # Description
 
-This is my attempt to recreate Seb Lee-Delisle's interactive sparkler game as seen in the second of the Royal Institution Christmas lectures by Dr Hannah Fry on 27 December 2019.
+This is my attempt to recreate Seb Lee-Delisle's interactive sparkler game as seen in the second of the Royal Institution Christmas lectures with Dr Hannah Fry on 27 December 2019. The game used the audience noise level to guide a sparkler between a scrolling sequence of obstacles.
 
 ![Stills Collage](images/stills-collage.jpg)
 
