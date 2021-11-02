@@ -2,7 +2,7 @@ const pos = location.pathname.lastIndexOf('/')
 const pathname = pos >= 0 ? location.pathname.substr(0, pos) : pathname
 const base = location.origin + pathname
 
-const CURRENT_CACHE_NAME = '0.0.17'
+const CURRENT_CACHE_NAME = '0.0.18'
 
 const URLS_TO_CACHE = [
   '/',
