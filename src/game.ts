@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser'
 import configureMicrophoneModule from './microphone.js'
+import { ObstaclePair } from './components/obstaclePair'
 import * as C from './constants'
 
 // const SCROLL_X_SPEED = 8
@@ -32,9 +33,11 @@ export class GameScene extends Phaser.Scene {
   private noisedUpdateCount: number
   private ship: Phaser.GameObjects.Rectangle
   private sparkler: Phaser.GameObjects.Particles.ParticleEmitter
-  private obstacles: Phaser.GameObjects.Polygon[]
+  private obstaclePair: ObstaclePair
   private gapPercent: number
   private microphoneModule: MicrophoneModule
+  private windowWidth: number
+  private windowHeight: number
 
   public constructor() {
     super(C.SceneKeys.Game)
@@ -43,6 +46,8 @@ export class GameScene extends Phaser.Scene {
       onNoiseLevelAboveThreshold: this.onMicrophoneStimulus.bind(this)
     }
     this.microphoneModule = configureMicrophoneModule(microphoneModuleConfig)
+    this.windowWidth = window.innerWidth
+    this.windowHeight = window.innerHeight
   }
 
   public preload() {
@@ -68,10 +73,7 @@ export class GameScene extends Phaser.Scene {
     window.addEventListener('resize', onResize)
     window.addEventListener('orientationchange', onOrientationChange)
 
-    const windowWidth = window.innerWidth
-    const windowHeight = window.innerHeight
-
-    this.ship = this.add.rectangle(windowWidth * 0.15, windowHeight * 0.9, 5, 5, 0xFFFFFF).setAngle(45)
+    this.ship = this.add.rectangle(this.windowWidth * 0.15, this.windowHeight * 0.9, 5, 5, 0xFFFFFF).setAngle(45)
     this.ship.scrollFactorX = 0
     this.physics.add.existing(this.ship)
     const body = this.ship.body as Phaser.Physics.Arcade.Body
@@ -81,7 +83,7 @@ export class GameScene extends Phaser.Scene {
 
     this.sparkler = this.createSparklerParticleEmitter()
 
-    this.obstacles = this.makeObstaclePair(windowWidth * 0.85, this.gapPercent)
+    this.obstaclePair = new ObstaclePair(this, this.windowWidth * 0.85, this.gapPercent)
 
     this.input.on(Phaser.Input.Events.POINTER_DOWN, this.onPointerDown, this)
 
@@ -91,8 +93,6 @@ export class GameScene extends Phaser.Scene {
 
   public update(_time: number, _delta: number) {
 
-    const windowWidth = window.innerWidth
-    const windowHeight = window.innerHeight
     const body = this.ship.body as Phaser.Physics.Arcade.Body
 
     // One of the following:
@@ -111,10 +111,11 @@ export class GameScene extends Phaser.Scene {
 
       body.moves = true
       this.cameras.main.scrollX = 0
-      this.ship.y = windowHeight * 0.9
+      console.log('[update]', 'this.windowHeight:', this.windowHeight)
+      this.ship.y = this.windowHeight * 0.9
       this.gapPercent = INITIAL_GAP_PERCENT
-      this.obstacles.forEach(obstacle => obstacle.destroy())
-      this.obstacles = this.makeObstaclePair(windowWidth * 0.85, this.gapPercent)
+      this.obstaclePair.destroy()
+      this.obstaclePair = new ObstaclePair(this, this.windowWidth * 0.85, this.gapPercent)
       this.gameState = GameState.Running
       this.game.events.emit(C.SparklerGameEvents.GameStarted)
     }
@@ -172,8 +173,8 @@ export class GameScene extends Phaser.Scene {
     const shipX = this.ship.x + this.cameras.main.scrollX
     const shipY = this.ship.y
 
-    const collision = this.obstacles.some(obstacle => obstacle.geom.contains(shipX, shipY))
-    if (collision) {
+    const obstacleCollidedWith = this.obstaclePair.contains(shipX, shipY)
+    if (obstacleCollidedWith) {
       this.gameState = GameState.Waiting
       const body = this.ship.body as Phaser.Physics.Arcade.Body
       body.moves = false
@@ -181,8 +182,7 @@ export class GameScene extends Phaser.Scene {
       return
     }
 
-    const obstacleCleared = this.obstacles.some(obstacle => {
-      const right = Phaser.Geom.Polygon.GetAABB(obstacle.geom).right
+    const obstacleCleared = this.obstaclePair.rightSatisfies(right => {
       const dx = shipX - right
       return dx >= 0 && dx <= this.getSpeed() * 0.9
     })
@@ -191,18 +191,14 @@ export class GameScene extends Phaser.Scene {
       this.createBurstParticleEmitter(this.ship.x, this.ship.y)
     }
 
-    const obstacleGone = this.obstacles.some(obstacle => {
-      const right = Phaser.Geom.Polygon.GetAABB(obstacle.geom).right
-      return right < this.cameras.main.scrollX
-    })
+    const obstacleGone = this.obstaclePair.rightSatisfies(right => right < this.cameras.main.scrollX)
     if (obstacleGone) {
       if (this.gapPercent > MIN_GAP_PERCENT) {
         this.gapPercent -= 2
       }
-      const windowWidth = window.innerWidth
-      this.obstacles.forEach(obstacle => obstacle.destroy())
-      const obstacleX = this.cameras.main.scrollX + windowWidth + this.getObstacleWidth() + OBSTACLE_LINE_WIDTH
-      this.obstacles = [] = this.makeObstaclePair(obstacleX, this.gapPercent)
+      const obstacleX = this.cameras.main.scrollX + this.windowWidth + this.obstaclePair.overallWidth
+      this.obstaclePair.destroy()
+      this.obstaclePair = new ObstaclePair(this, obstacleX, this.gapPercent)
     }
   }
 
@@ -250,72 +246,28 @@ export class GameScene extends Phaser.Scene {
   }
 
   private resize(): void {
-    const windowWidth = window.innerWidth
-    const windowHeight = window.innerHeight
-    this.scale.resize(windowWidth, windowHeight)
+
+    const windowWidthNew = window.innerWidth
+    const windowHeightNew = window.innerHeight
+
+    const windowWidthOld = this.windowWidth
+    const windowHeightOld = this.windowHeight
+
+    if (windowWidthNew !== windowWidthOld || windowHeightNew !== windowHeightOld) {
+      this.windowWidth = windowWidthNew
+      this.windowHeight = windowHeightNew
+      this.scale.resize(windowWidthNew, windowHeightNew)
+      this.physics.world.setBounds(0, 0, windowWidthNew, windowHeightNew)
+      const ratioX = windowWidthNew / windowWidthOld
+      const ratioY = windowHeightNew / windowHeightOld
+      console.log({ wo: windowWidthOld, ho: windowHeightOld, wn: windowWidthNew, hn: windowHeightNew, ratioX, ratioY })
+      this.ship.x = this.ship.x * ratioX
+      this.ship.y = this.ship.y * ratioY
+      this.obstaclePair.resize(ratioX, ratioY)
+    }
   }
 
   private getSpeed() {
-    const windowWidth = window.innerWidth
-    const windowHeight = window.innerHeight
-    const maxDimension = Math.max(windowWidth, windowHeight)
-    return Math.round(maxDimension / 200)
-  }
-
-  private getObstacleWidth() {
-    const windowWidth = window.innerWidth
-    const windowHeight = window.innerHeight
-    const maxDimension = Math.max(windowWidth, windowHeight)
-    return Math.round(maxDimension / 20)
-  }
-
-  private makeObstaclePair(
-    x: number,
-    gapPercent: number
-  ): [Phaser.GameObjects.Polygon, Phaser.GameObjects.Polygon] {
-
-    const makeObstacle = (
-      addPathDetails: (path: Phaser.Curves.Path) => void
-    ): Phaser.GameObjects.Polygon => {
-      const path = new Phaser.Curves.Path()
-      addPathDetails(path)
-      const points = path.getPoints()
-      const polygon = this.add.polygon(0, 0, points)
-      polygon.closePath = false
-      polygon.setOrigin(0, 0)
-      polygon.isStroked = true
-      polygon.lineWidth = OBSTACLE_LINE_WIDTH
-      polygon.strokeColor = 0xFFFFFF
-      return polygon
-    }
-
-    const obstacleWidth = this.getObstacleWidth()
-
-    const RADIUS = obstacleWidth / 2
-
-    const windowHeight = window.innerHeight
-    const gapHeight = windowHeight * gapPercent / 100
-    const halfRemainingHeight = (windowHeight - gapHeight) / 2
-    const centreOffsetRatio = Phaser.Math.FloatBetween(-0.5, 0.5)
-    const upperHeight = (1 + centreOffsetRatio) * halfRemainingHeight
-    const lowerHeight = (1 - centreOffsetRatio) * halfRemainingHeight
-
-    const upperObstacle = makeObstacle((path: Phaser.Curves.Path): void => {
-      path
-        .moveTo(x, 0)
-        .lineTo(x, upperHeight - RADIUS)
-        .ellipseTo(RADIUS, RADIUS, 180, 0, true)
-        .lineTo(x + obstacleWidth, 0)
-    })
-
-    const lowerObstacle = makeObstacle((path: Phaser.Curves.Path): void => {
-      path
-        .moveTo(x, windowHeight)
-        .lineTo(x, windowHeight - lowerHeight + RADIUS)
-        .ellipseTo(RADIUS, RADIUS, 180, 0, false)
-        .lineTo(x + obstacleWidth, windowHeight)
-    })
-
-    return [upperObstacle, lowerObstacle]
+    return Math.round(this.windowWidth / 150)
   }
 }
