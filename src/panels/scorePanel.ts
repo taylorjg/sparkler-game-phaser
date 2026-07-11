@@ -1,7 +1,7 @@
 import * as Phaser from "phaser";
 import { createTextBig } from "@app/ui";
 import { applyAnchor } from "@app/layout";
-import * as C from "@app/constants";
+import { SparklerGameEvents } from "@app/constants";
 import * as T from "@app/types";
 
 export class ScorePanel {
@@ -20,12 +20,12 @@ export class ScorePanel {
     this.updateScoreText();
 
     scene.game.events.on(
-      C.SparklerGameEvents.GameStarted,
+      SparklerGameEvents.GameStarted,
       this.onGameStarted,
       this
     );
     scene.game.events.on(
-      C.SparklerGameEvents.ObstacleCleared,
+      SparklerGameEvents.ObstacleCleared,
       this.onObstacleCleared,
       this
     );

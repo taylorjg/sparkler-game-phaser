@@ -2,7 +2,7 @@ import * as Phaser from "phaser";
 import { promisifyDelayedCall } from "@app/promisifyThings";
 import { createTextSmall } from "@app/ui";
 import { applyAnchor, createAnchoredContainer } from "@app/layout";
-import * as C from "@app/constants";
+import { ImageKeys, SparklerGameEvents } from "@app/constants";
 import * as T from "@app/types";
 
 const SHOW_MICROPHONE_ERROR_FOR = 5000;
@@ -20,7 +20,7 @@ export class MicrophonePanel {
     this.autoTurnOffTimeoutId = null;
 
     this.icon = scene.add
-      .image(0, 0, C.ImageKeys.Microphone)
+      .image(0, 0, ImageKeys.Microphone)
       .setOrigin(1, 1)
       .setInteractive({ useHandCursor: true })
       .on(Phaser.Input.Events.POINTER_DOWN, this.onClickMicrophone, this);
@@ -40,17 +40,17 @@ export class MicrophonePanel {
     this.layout();
 
     this.scene.game.events.on(
-      C.SparklerGameEvents.MicrophoneError,
+      SparklerGameEvents.MicrophoneError,
       this.onMicrophoneError,
       this
     );
     this.scene.game.events.on(
-      C.SparklerGameEvents.GameStarted,
+      SparklerGameEvents.GameStarted,
       this.onGameStarted,
       this
     );
     this.scene.game.events.on(
-      C.SparklerGameEvents.GameEnded,
+      SparklerGameEvents.GameEnded,
       this.onGameEnded,
       this
     );
@@ -78,12 +78,12 @@ export class MicrophonePanel {
 
   private becomeUnmuted() {
     this.muteLine.setVisible(false);
-    this.scene.game.events.emit(C.SparklerGameEvents.MicrophoneOn);
+    this.scene.game.events.emit(SparklerGameEvents.MicrophoneOn);
   }
 
   private becomeMuted() {
     this.muteLine.setVisible(true);
-    this.scene.game.events.emit(C.SparklerGameEvents.MicrophoneOff);
+    this.scene.game.events.emit(SparklerGameEvents.MicrophoneOff);
   }
 
   private async onMicrophoneError(errorMessage: string): Promise<void> {

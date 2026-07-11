@@ -1,6 +1,6 @@
 import * as Phaser from "phaser";
 import configureMicrophoneModule from "./microphone.js";
-import * as C from "./constants";
+import { ParticleKeys, SceneKeys, SparklerGameEvents } from "./constants";
 
 // const SCROLL_X_SPEED = 8
 const UPSTRUST = -1500;
@@ -36,7 +36,7 @@ export class GameScene extends Phaser.Scene {
   private microphoneModule: MicrophoneModule;
 
   public constructor() {
-    super(C.SceneKeys.Game);
+    super(SceneKeys.Game);
     const microphoneModuleConfig = {
       NOISE_LEVEL_THRESHOLD: 0.5,
       onNoiseLevelAboveThreshold: this.onMicrophoneStimulus.bind(this),
@@ -45,7 +45,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   public preload() {
-    this.load.image(C.ParticleKeys.Star, "assets/particles/star_06.png");
+    this.load.image(ParticleKeys.Star, "assets/particles/star_06.png");
   }
 
   public create() {
@@ -87,12 +87,12 @@ export class GameScene extends Phaser.Scene {
     this.input.on(Phaser.Input.Events.POINTER_DOWN, this.onPointerDown, this);
 
     this.game.events.on(
-      C.SparklerGameEvents.MicrophoneOn,
+      SparklerGameEvents.MicrophoneOn,
       this.onMicrophoneOn,
       this
     );
     this.game.events.on(
-      C.SparklerGameEvents.MicrophoneOff,
+      SparklerGameEvents.MicrophoneOff,
       this.onMicrophoneOff,
       this
     );
@@ -127,7 +127,7 @@ export class GameScene extends Phaser.Scene {
         this.gapPercent
       );
       this.gameState = GameState.Running;
-      this.game.events.emit(C.SparklerGameEvents.GameStarted);
+      this.game.events.emit(SparklerGameEvents.GameStarted);
     }
 
     if (this.gameState == GameState.Running) {
@@ -170,10 +170,7 @@ export class GameScene extends Phaser.Scene {
       await this.microphoneModule.microphoneOn();
     } catch (error) {
       console.error("[onMicrophoneOn]", error.message);
-      this.game.events.emit(
-        C.SparklerGameEvents.MicrophoneError,
-        error.message
-      );
+      this.game.events.emit(SparklerGameEvents.MicrophoneError, error.message);
     }
   }
 
@@ -193,7 +190,7 @@ export class GameScene extends Phaser.Scene {
       this.gameState = GameState.Waiting;
       const body = this.ship.body as Phaser.Physics.Arcade.Body;
       body.moves = false;
-      this.game.events.emit(C.SparklerGameEvents.GameEnded);
+      this.game.events.emit(SparklerGameEvents.GameEnded);
       return;
     }
 
@@ -203,7 +200,7 @@ export class GameScene extends Phaser.Scene {
       return dx >= 0 && dx <= this.getSpeed() * 0.9;
     });
     if (obstacleCleared) {
-      this.game.events.emit(C.SparklerGameEvents.ObstacleCleared);
+      this.game.events.emit(SparklerGameEvents.ObstacleCleared);
       this.createBurstParticleEmitter(this.ship.x, this.ship.y);
     }
 
@@ -227,9 +224,9 @@ export class GameScene extends Phaser.Scene {
   }
 
   private createSparklerParticleEmitter(): Phaser.GameObjects.Particles.ParticleEmitter {
-    const emitter = this.add.particles(0, 0, C.ParticleKeys.Star, {
+    const emitter = this.add.particles(0, 0, ParticleKeys.Star, {
       follow: this.ship,
-      followOffset: { x: -3 },
+      followOffset: { x: -3, y: 0 },
       alpha: { start: 1, end: 0.5 },
       scale: { start: 0.1, end: 0.01 },
       blendMode: "ADD",
@@ -244,7 +241,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private createBurstParticleEmitter(x: number, y: number): void {
-    const emitter = this.add.particles(x, y, C.ParticleKeys.Star, {
+    const emitter = this.add.particles(x, y, ParticleKeys.Star, {
       accelerationX: 50,
       accelerationY: 50,
       angle: { start: 0, end: 360, steps: 8 },

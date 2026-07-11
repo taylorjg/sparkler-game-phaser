@@ -1,5 +1,5 @@
 import * as Phaser from "phaser";
-import * as C from "./constants";
+import { FontKeys } from "./constants";
 import * as T from "./types";
 
 const FONT_COLOUR = 0x800080;
@@ -24,7 +24,7 @@ export const createTextBig = (
 ): Phaser.GameObjects.BitmapText => {
   const fontSize = getFontSizeBig();
   return scene.add
-    .bitmapText(0, 0, C.FontKeys.Arcade, text, fontSize)
+    .bitmapText(0, 0, FontKeys.Arcade, text, fontSize)
     .setTint(FONT_COLOUR);
 };
 
@@ -34,6 +34,6 @@ export const createTextSmall = (
 ): Phaser.GameObjects.BitmapText => {
   const fontSize = getFontSizeSmall();
   return scene.add
-    .bitmapText(0, 0, C.FontKeys.Arcade, text, fontSize)
+    .bitmapText(0, 0, FontKeys.Arcade, text, fontSize)
     .setTint(FONT_COLOUR);
 };

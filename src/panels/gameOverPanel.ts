@@ -1,7 +1,7 @@
 import * as Phaser from "phaser";
 import { createTextBig } from "@app/ui";
 import { applyAnchor, layoutVertical } from "@app/layout";
-import * as C from "@app/constants";
+import { SparklerGameEvents } from "@app/constants";
 import * as T from "@app/types";
 
 export class GameOverPanel {
@@ -20,15 +20,11 @@ export class GameOverPanel {
     this.gameOverPanel.setVisible(false);
 
     scene.game.events.on(
-      C.SparklerGameEvents.GameStarted,
+      SparklerGameEvents.GameStarted,
       this.onGameStarted,
       this
     );
-    scene.game.events.on(
-      C.SparklerGameEvents.GameEnded,
-      this.onGameEnded,
-      this
-    );
+    scene.game.events.on(SparklerGameEvents.GameEnded, this.onGameEnded, this);
     scene.scale.on(Phaser.Scale.Events.RESIZE, this.layout, this);
   }
 

@@ -1,25 +1,36 @@
-export const enum SparklerGameEvents {
-  GameStarted = "GameStarted",
-  GameEnded = "GameEnded",
-  ObstacleCleared = "ObstacleCleared",
-  MicrophoneOn = "MicrophoneOn",
-  MicrophoneOff = "MicrophoneOff",
-  MicrophoneError = "MicrophoneError",
-}
+export const SparklerGameEvents = {
+  GameStarted: "GameStarted",
+  GameEnded: "GameEnded",
+  ObstacleCleared: "ObstacleCleared",
+  MicrophoneOn: "MicrophoneOn",
+  MicrophoneOff: "MicrophoneOff",
+  MicrophoneError: "MicrophoneError",
+} as const;
 
-export const enum SceneKeys {
-  Game = "Game",
-  HUD = "HUD",
-}
+export type SparklerGameEvent =
+  (typeof SparklerGameEvents)[keyof typeof SparklerGameEvents];
 
-export const enum FontKeys {
-  Arcade = "arcade",
-}
+export const SceneKeys = {
+  Game: "Game",
+  HUD: "HUD",
+} as const;
 
-export const enum ImageKeys {
-  Microphone = "microphone",
-}
+export type SceneKey = (typeof SceneKeys)[keyof typeof SceneKeys];
 
-export const enum ParticleKeys {
-  Star = "star",
-}
+export const FontKeys = {
+  Arcade: "arcade",
+} as const;
+
+export type FontKey = (typeof FontKeys)[keyof typeof FontKeys];
+
+export const ImageKeys = {
+  Microphone: "microphone",
+} as const;
+
+export type ImageKey = (typeof ImageKeys)[keyof typeof ImageKeys];
+
+export const ParticleKeys = {
+  Star: "star",
+} as const;
+
+export type ParticleKey = (typeof ParticleKeys)[keyof typeof ParticleKeys];
