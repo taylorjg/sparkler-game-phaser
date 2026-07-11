@@ -1,38 +1,38 @@
-import * as Phaser from 'phaser'
-import { GameScene } from './game'
-import { HUDScene } from './hud'
-import { version } from '../package.json'
+import * as Phaser from "phaser";
+import { GameScene } from "./game";
+import { HUDScene } from "./hud";
+import { version } from "../package.json";
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
-  title: 'Sparkler Game',
+  title: "Sparkler Game",
   type: Phaser.WEBGL,
   scale: {
     width: window.innerWidth,
     height: window.innerHeight,
     mode: Phaser.Scale.NONE,
-    fullscreenTarget: 'game'
+    fullscreenTarget: "game",
   },
-  backgroundColor: '#000000',
+  backgroundColor: "#000000",
   scene: [GameScene, HUDScene],
-  parent: 'game',
+  parent: "game",
   dom: {
-    createContainer: true
+    createContainer: true,
   },
   physics: {
-    default: 'arcade',
+    default: "arcade",
     arcade: {
       gravity: {
         x: 0,
-        y: 300
+        y: 300,
       },
-      debug: true
-    }
-  }
-}
+      debug: true,
+    },
+  },
+};
 
 const setVersion = () => {
-  document.querySelector('#version').innerHTML = version
-}
+  document.querySelector("#version").innerHTML = version;
+};
 
-setVersion()
-new Phaser.Game(gameConfig)
+setVersion();
+new Phaser.Game(gameConfig);

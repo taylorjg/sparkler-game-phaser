@@ -1,3 +1,3 @@
-import * as Phaser from 'phaser'
+import * as Phaser from "phaser";
 
-export type HUDSceneLike = Phaser.Scene
+export type HUDSceneLike = Phaser.Scene;

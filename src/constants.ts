@@ -1,25 +1,25 @@
 export const enum SparklerGameEvents {
-  GameStarted = 'GameStarted',
-  GameEnded = 'GameEnded',
-  ObstacleCleared = 'ObstacleCleared',
-  MicrophoneOn = 'MicrophoneOn',
-  MicrophoneOff = 'MicrophoneOff',
-  MicrophoneError = 'MicrophoneError'
+  GameStarted = "GameStarted",
+  GameEnded = "GameEnded",
+  ObstacleCleared = "ObstacleCleared",
+  MicrophoneOn = "MicrophoneOn",
+  MicrophoneOff = "MicrophoneOff",
+  MicrophoneError = "MicrophoneError",
 }
 
 export const enum SceneKeys {
-  Game = 'Game',
-  HUD = 'HUD'
+  Game = "Game",
+  HUD = "HUD",
 }
 
 export const enum FontKeys {
-  Arcade = 'arcade'
+  Arcade = "arcade",
 }
 
 export const enum ImageKeys {
-  Microphone = 'microphone'
+  Microphone = "microphone",
 }
 
 export const enum ParticleKeys {
-  Star = 'star'
+  Star = "star",
 }
