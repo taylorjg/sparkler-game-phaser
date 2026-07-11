@@ -1,8 +1,8 @@
 import * as Phaser from 'phaser'
-import { createTextBig } from '../ui'
-import { applyAnchor, layoutVertical } from '../layout'
-import * as C from '../constants'
-import * as T from '../types'
+import { createTextBig } from '@app/ui'
+import { applyAnchor, layoutVertical } from '@app/layout'
+import * as C from '@app/constants'
+import * as T from '@app/types'
 
 export class GameOverPanel {
 

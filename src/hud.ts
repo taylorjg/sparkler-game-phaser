@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser'
-import { ScorePanel } from './components/scorePanel'
-import { MicrophonePanel } from './components/microphonePanel'
-import { GameOverPanel } from './components/gameOverPanel'
+import { ScorePanel } from '@app/panels/scorePanel'
+import { MicrophonePanel } from '@app/panels/microphonePanel'
+import { GameOverPanel } from '@app/panels/gameOverPanel'
 import * as C from './constants'
 
 export class HUDScene extends Phaser.Scene {

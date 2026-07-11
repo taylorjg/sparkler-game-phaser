@@ -1,9 +1,9 @@
 import * as Phaser from 'phaser'
-import { promisifyDelayedCall } from '../promisifyThings'
-import { createTextSmall } from '../ui'
-import { applyAnchor, createAnchoredContainer } from '../layout'
-import * as C from '../constants'
-import * as T from '../types'
+import { promisifyDelayedCall } from '@app/promisifyThings'
+import { createTextSmall } from '@app/ui'
+import { applyAnchor, createAnchoredContainer } from '@app/layout'
+import * as C from '@app/constants'
+import * as T from '@app/types'
 
 const SHOW_MICROPHONE_ERROR_FOR = 5000
 const AUTO_TURN_OFF_PERIOD = 10000

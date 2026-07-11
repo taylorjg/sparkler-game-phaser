@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@app/*": ["src/*"]
+    },
     "target": "ES2020",
     "module": "ESNext",
     "moduleResolution": "bundler",
@@ -10,6 +14,7 @@
     "isolatedModules": true,
     "noEmit": true
   },
+  "references": [{ "path": "./tsconfig.node.json" }],
   "include": [
     "src/**/*.ts",
     "src/**/*.js"

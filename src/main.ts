@@ -1,4 +1,3 @@
-import './AudioContextMonkeyPatch'
 import * as Phaser from 'phaser'
 import { GameScene } from './game'
 import { HUDScene } from './hud'

@@ -1,8 +1,8 @@
 import * as Phaser from 'phaser'
-import { createTextBig } from '../ui'
-import { applyAnchor } from '../layout'
-import * as C from '../constants'
-import * as T from '../types'
+import { createTextBig } from '@app/ui'
+import { applyAnchor } from '@app/layout'
+import * as C from '@app/constants'
+import * as T from '@app/types'
 
 export class ScorePanel {
 
