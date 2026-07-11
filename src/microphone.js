@@ -48,7 +48,7 @@ export default config => {
         const mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true })
         const audioContext = new AudioContext()
         const source = audioContext.createMediaStreamSource(mediaStream)
-        await audioContext.audioWorklet.addModule('stream-processor.js')
+        await audioContext.audioWorklet.addModule(`${import.meta.env.BASE_URL}stream-processor.js`)
         const streamWorklet = new StreamWorklet(audioContext, 'stream-processor')
         source.connect(streamWorklet)
         streamWorklet.connect(audioContext.destination)

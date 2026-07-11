@@ -1,4 +1,4 @@
-console.log('[src/stream-processor.js]')
+console.log('[public/stream-processor.js]')
 
 class StreamProcessor extends AudioWorkletProcessor {
   process(inputs) {

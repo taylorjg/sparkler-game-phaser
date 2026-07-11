@@ -14,6 +14,8 @@ You can control the game in one of the following ways:
 
 # Dev Instructions
 
+Requires Node 18 or later.
+
 ## Running Locally
 
 ```
@@ -21,11 +23,13 @@ npm install
 npm run dev
 ```
 
+Opens at http://localhost:3400/sparkler-game-phaser/
+
 ## Building
 
 ```
 rm -rf dist
-npm run build:prod
+npm run build
 ```
 
 ## Deploying (to gh-pages)

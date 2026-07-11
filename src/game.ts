@@ -104,8 +104,8 @@ export class GameScene extends Phaser.Scene {
     if (this.gameState == GameState.Waiting && gotInputStimulus) {
 
       if (this.firstStart) {
-        this.sparkler.setGravityX(-1000)
-        this.sparkler.setAngle({ min: 180 - 60, max: 180 + 60 })
+        this.sparkler.setParticleGravity(-1000, 0)
+        this.sparkler.particleAngle = { min: 180 - 60, max: 180 + 60 }
         this.firstStart = false
       }
 
@@ -207,8 +207,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private createSparklerParticleEmitter(): Phaser.GameObjects.Particles.ParticleEmitter {
-    const particles = this.add.particles(C.ParticleKeys.Star)
-    const emitter = particles.createEmitter({
+    const emitter = this.add.particles(0, 0, C.ParticleKeys.Star, {
       follow: this.ship,
       followOffset: { x: -3 },
       alpha: { start: 1, end: 0.5 },
@@ -231,8 +230,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private createBurstParticleEmitter(x: number, y: number): void {
-    const particles = this.add.particles(C.ParticleKeys.Star)
-    const emitter = particles.createEmitter({
+    const emitter = this.add.particles(x, y, C.ParticleKeys.Star, {
       accelerationX: 50,
       accelerationY: 50,
       angle: { start: 0, end: 360, steps: 8 },
