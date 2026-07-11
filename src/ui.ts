@@ -19,7 +19,7 @@ const getFontSizeSmall = () => {
 }
 
 export const createTextBig = (
-  scene: T.SceneWithRexUI,
+  scene: T.HUDSceneLike,
   text: string
 ): Phaser.GameObjects.BitmapText => {
   const fontSize = getFontSizeBig()
@@ -27,7 +27,7 @@ export const createTextBig = (
 }
 
 export const createTextSmall = (
-  scene: T.SceneWithRexUI,
+  scene: T.HUDSceneLike,
   text: string
 ): Phaser.GameObjects.BitmapText => {
   const fontSize = getFontSizeSmall()

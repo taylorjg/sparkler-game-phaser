@@ -1,13 +1,10 @@
 import * as Phaser from 'phaser'
-import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin'
 import { ScorePanel } from './components/scorePanel'
 import { MicrophonePanel } from './components/microphonePanel'
 import { GameOverPanel } from './components/gameOverPanel'
 import * as C from './constants'
 
 export class HUDScene extends Phaser.Scene {
-
-  public rexUI: RexUIPlugin
 
   public constructor() {
     super({

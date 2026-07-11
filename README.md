@@ -23,7 +23,7 @@ npm install
 npm run dev
 ```
 
-Opens at http://localhost:3400/sparkler-game-phaser/
+Opens at http://localhost:5173/sparkler-game-phaser/
 
 ## Building
 
@@ -45,6 +45,6 @@ npm run deploy
 * [Seb Lee-Delisle &#8211; Laser artist and presenter](https://seblee.me/)
 * Phaser:
   * [Phaser - A fast, fun and free open source HTML5 game framework](https://phaser.io/)
-  * [Phaser 3 API Documentation](https://newdocs.phaser.io/docs/)
+  * [Phaser API Documentation](https://docs.phaser.io/)
 * My earlier attempt using only vanilla JavaScript:
   * [sparkler-game](https://github.com/taylorjg/sparkler-game)

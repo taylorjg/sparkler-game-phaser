@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser'
-import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin'
 import { promisifyDelayedCall } from '../promisifyThings'
 import { createTextSmall } from '../ui'
+import { applyAnchor, createAnchoredContainer } from '../layout'
 import * as C from '../constants'
 import * as T from '../types'
 
@@ -12,12 +12,11 @@ export class MicrophonePanel {
 
   private icon: Phaser.GameObjects.Image
   private muteLine: Phaser.GameObjects.Line
-  private microphonePanel: RexUIPlugin.Sizer
-  private scene: T.SceneWithRexUI
+  private microphonePanel: Phaser.GameObjects.Container
+  private scene: T.HUDSceneLike
   private autoTurnOffTimeoutId: NodeJS.Timeout
 
-  public constructor(scene: T.SceneWithRexUI) {
-
+  public constructor(scene: T.HUDSceneLike) {
     this.scene = scene
     this.autoTurnOffTimeoutId = null
 
@@ -34,15 +33,20 @@ export class MicrophonePanel {
 
     const microphoneIconContainer = scene.add.container(0, 0, [this.icon, this.muteLine]).setScale(.75)
 
-    this.microphonePanel = scene.rexUI.add.sizer({
-      anchor: { right: 'right-20', bottom: 'bottom-20' }
-    })
-      .add(microphoneIconContainer)
-      .layout()
+    this.microphonePanel = scene.add.container(0, 0, [microphoneIconContainer])
+    this.layout()
 
     this.scene.game.events.on(C.SparklerGameEvents.MicrophoneError, this.onMicrophoneError, this)
     this.scene.game.events.on(C.SparklerGameEvents.GameStarted, this.onGameStarted, this)
     this.scene.game.events.on(C.SparklerGameEvents.GameEnded, this.onGameEnded, this)
+    scene.scale.on(Phaser.Scale.Events.RESIZE, this.layout, this)
+  }
+
+  private layout = (): void => {
+    applyAnchor(this.scene, this.microphonePanel, {
+      right: 'right-20',
+      bottom: 'bottom-20'
+    })
   }
 
   private get muted() {
@@ -68,25 +72,23 @@ export class MicrophonePanel {
   }
 
   private async onMicrophoneError(errorMessage: string): Promise<void> {
-
     this.microphonePanel.setVisible(false)
 
     const textLine1 = createTextSmall(this.scene, 'Failed to turn on microphone')
     const textLine2 = createTextSmall(this.scene, errorMessage)
 
-    const sizer = this.scene.rexUI.add.sizer({
-      orientation: 'vertical',
-      anchor: { centerX: 'center', bottom: 'bottom-20' },
-      space: { item: 20 }
-    })
-      .add(textLine1)
-      .add(textLine2)
-      .layout()
+    const errorPanel = createAnchoredContainer(
+      this.scene,
+      [textLine1, textLine2],
+      { centerX: 'center', bottom: 'bottom-20' },
+      20
+    )
 
     await promisifyDelayedCall(this.scene, SHOW_MICROPHONE_ERROR_FOR)
 
-    sizer.removeAll(true)
-    sizer.destroy(true)
+    errorPanel.destroy(true)
+    this.microphonePanel.setVisible(true)
+    this.layout()
   }
 
   private onGameStarted(): void {
@@ -95,7 +97,6 @@ export class MicrophonePanel {
   }
 
   private onGameEnded(): void {
-
     clearTimeout(this.autoTurnOffTimeoutId)
     this.autoTurnOffTimeoutId = null
 

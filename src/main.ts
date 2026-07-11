@@ -1,13 +1,12 @@
 import './AudioContextMonkeyPatch'
 import * as Phaser from 'phaser'
-import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin'
 import { GameScene } from './game'
 import { HUDScene } from './hud'
 import { version } from '../package.json'
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
   title: 'Sparkler Game',
-  type: Phaser.AUTO,
+  type: Phaser.WEBGL,
   scale: {
     width: window.innerWidth,
     height: window.innerHeight,
@@ -28,13 +27,6 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
       },
       debug: true
     }
-  },
-  plugins: {
-    scene: [{
-      key: 'rexUI',
-      plugin: RexUIPlugin,
-      mapping: 'rexUI'
-    }]
   }
 }
 

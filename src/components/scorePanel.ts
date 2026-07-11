@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser'
 import { createTextBig } from '../ui'
+import { applyAnchor } from '../layout'
 import * as C from '../constants'
 import * as T from '../types'
 
@@ -7,22 +8,25 @@ export class ScorePanel {
 
   private score: number
   private scoreText: Phaser.GameObjects.BitmapText
+  private container: Phaser.GameObjects.Container
+  private scene: T.HUDSceneLike
 
-  public constructor(scene: T.SceneWithRexUI) {
-
+  public constructor(scene: T.HUDSceneLike) {
+    this.scene = scene
     this.scoreText = createTextBig(scene, '')
-
-    scene.rexUI.add.sizer({
-      anchor: { left: 'left+20', top: 'top+20' }
-    })
-      .add(this.scoreText)
-      .layout()
+    this.container = scene.add.container(0, 0, [this.scoreText])
+    this.layout()
 
     this.score = 0
     this.updateScoreText()
 
     scene.game.events.on(C.SparklerGameEvents.GameStarted, this.onGameStarted, this)
     scene.game.events.on(C.SparklerGameEvents.ObstacleCleared, this.onObstacleCleared, this)
+    scene.scale.on(Phaser.Scale.Events.RESIZE, this.layout, this)
+  }
+
+  private layout = (): void => {
+    applyAnchor(this.scene, this.container, { left: 'left+20', top: 'top+20' })
   }
 
   private updateScoreText(): void {
