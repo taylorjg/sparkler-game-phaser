@@ -59,17 +59,11 @@ export class GameScene extends Phaser.Scene {
     const searchParams = new URLSearchParams(window.location.search);
     this.physics.world.drawDebug = searchParams.has("debug");
 
-    const onResize = () => this.resize();
-    const onOrientationChange = () => this.resize();
-
-    window.addEventListener("resize", onResize);
-    window.addEventListener("orientationchange", onOrientationChange);
-
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
+    const width = this.scale.width;
+    const height = this.scale.height;
 
     this.ship = this.add
-      .rectangle(windowWidth * 0.15, windowHeight * 0.9, 5, 5, 0xffffff)
+      .rectangle(width * 0.15, height * 0.9, 5, 5, 0xffffff)
       .setAngle(45);
     this.ship.scrollFactorX = 0;
     this.physics.add.existing(this.ship);
@@ -80,7 +74,7 @@ export class GameScene extends Phaser.Scene {
 
     this.sparkler = this.createSparklerParticleEmitter();
 
-    this.obstacles = this.makeObstaclePair(windowWidth * 0.85, this.gapPercent);
+    this.obstacles = this.makeObstaclePair(width * 0.85, this.gapPercent);
 
     this.input.on(Phaser.Input.Events.POINTER_DOWN, this.onPointerDown, this);
 
@@ -97,8 +91,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   public update(_time: number, delta: number) {
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
+    const width = this.scale.width;
+    const height = this.scale.height;
     const body = this.ship.body as Phaser.Physics.Arcade.Body;
     const clampedDelta = Math.min(delta, MAX_DELTA_MS);
 
@@ -121,14 +115,11 @@ export class GameScene extends Phaser.Scene {
 
       body.moves = true;
       this.cameras.main.scrollX = 0;
-      this.ship.y = windowHeight * 0.9;
+      this.ship.y = height * 0.9;
       this.gapPercent = INITIAL_GAP_PERCENT;
       this.obstaclePairCleared = false;
       this.obstacles.forEach((obstacle) => obstacle.destroy());
-      this.obstacles = this.makeObstaclePair(
-        windowWidth * 0.85,
-        this.gapPercent
-      );
+      this.obstacles = this.makeObstaclePair(width * 0.85, this.gapPercent);
       this.gameState = GameState.Running;
       this.game.events.emit(SparklerGameEvents.GameStarted);
     }
@@ -224,11 +215,10 @@ export class GameScene extends Phaser.Scene {
       if (this.gapPercent > MIN_GAP_PERCENT) {
         this.gapPercent -= 2;
       }
-      const windowWidth = window.innerWidth;
       this.obstacles.forEach((obstacle) => obstacle.destroy());
       const obstacleX =
         this.cameras.main.scrollX +
-        windowWidth +
+        this.scale.width +
         this.getObstacleWidth() +
         OBSTACLE_LINE_WIDTH;
       this.obstacles = this.makeObstaclePair(obstacleX, this.gapPercent);
@@ -272,27 +262,17 @@ export class GameScene extends Phaser.Scene {
     emitter.explode(40);
   }
 
-  private resize(): void {
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
-    this.scale.resize(windowWidth, windowHeight);
-  }
-
   private getScrollDistance(delta: number): number {
     return this.getSpeed() * (delta / REFERENCE_FRAME_MS);
   }
 
   private getSpeed() {
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
-    const maxDimension = Math.max(windowWidth, windowHeight);
+    const maxDimension = Math.max(this.scale.width, this.scale.height);
     return Math.round(maxDimension / 200);
   }
 
   private getObstacleWidth() {
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
-    const maxDimension = Math.max(windowWidth, windowHeight);
+    const maxDimension = Math.max(this.scale.width, this.scale.height);
     return Math.round(maxDimension / 20);
   }
 
@@ -319,9 +299,9 @@ export class GameScene extends Phaser.Scene {
 
     const RADIUS = obstacleWidth / 2;
 
-    const windowHeight = window.innerHeight;
-    const gapHeight = (windowHeight * gapPercent) / 100;
-    const halfRemainingHeight = (windowHeight - gapHeight) / 2;
+    const height = this.scale.height;
+    const gapHeight = (height * gapPercent) / 100;
+    const halfRemainingHeight = (height - gapHeight) / 2;
     const centreOffsetRatio = Phaser.Math.FloatBetween(-0.5, 0.5);
     const upperHeight = (1 + centreOffsetRatio) * halfRemainingHeight;
     const lowerHeight = (1 - centreOffsetRatio) * halfRemainingHeight;
@@ -336,10 +316,10 @@ export class GameScene extends Phaser.Scene {
 
     const lowerObstacle = makeObstacle((path: Phaser.Curves.Path): void => {
       path
-        .moveTo(x, windowHeight)
-        .lineTo(x, windowHeight - lowerHeight + RADIUS)
+        .moveTo(x, height)
+        .lineTo(x, height - lowerHeight + RADIUS)
         .ellipseTo(RADIUS, RADIUS, 180, 0, false)
-        .lineTo(x + obstacleWidth, windowHeight);
+        .lineTo(x + obstacleWidth, height);
     });
 
     return [upperObstacle, lowerObstacle];

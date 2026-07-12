@@ -8,7 +8,9 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
   scale: {
     width: window.innerWidth,
     height: window.innerHeight,
-    mode: Phaser.Scale.NONE,
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+    expandParent: true,
     fullscreenTarget: "game",
   },
   backgroundColor: "#000000",
