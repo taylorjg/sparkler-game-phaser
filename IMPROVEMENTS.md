@@ -96,7 +96,7 @@ A simple `shutdown()` on scenes/panels that calls `.off()` / `removeListener` an
 
 ### 5. Small correctness / polish items
 
-- **`UPSTRUST`** looks like a typo for `UP_THRUST`.
+- ~~**`UPSTRUST`** typo~~ — **Done** (renamed to `UP_THRUST`).
 - ~~**`NodeJS.Timeout`** in `microphonePanel.ts`~~ — **Done**.
 - ~~**Error handling** in `onMicrophoneOn`~~ — **Done**.
 - ~~**Commented-out constants**~~ — **Done**.

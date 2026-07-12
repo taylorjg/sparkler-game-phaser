@@ -2,7 +2,7 @@ import * as Phaser from "phaser";
 import configureMicrophoneModule from "./microphone";
 import { ParticleKeys, SceneKeys, SparklerGameEvents } from "./constants";
 
-const UPSTRUST = -1500;
+const UP_THRUST = -1500;
 const OBSTACLE_LINE_WIDTH = 2;
 const INITIAL_GAP_PERCENT = 30;
 const MIN_GAP_PERCENT = 10;
@@ -134,7 +134,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     if (this.gameState == GameState.Running) {
-      const accelerationY = gotInputStimulus ? UPSTRUST : 0;
+      const accelerationY = gotInputStimulus ? UP_THRUST : 0;
       body.setAccelerationY(accelerationY);
       const scrollThisFrame = this.getScrollDistance(clampedDelta);
       this.cameras.main.scrollX += scrollThisFrame;
