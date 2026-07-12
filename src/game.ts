@@ -2,9 +2,7 @@ import * as Phaser from "phaser";
 import configureMicrophoneModule from "./microphone";
 import { ParticleKeys, SceneKeys, SparklerGameEvents } from "./constants";
 
-// const SCROLL_X_SPEED = 8
 const UPSTRUST = -1500;
-// const OBSTACLE_WIDTH = 80
 const OBSTACLE_LINE_WIDTH = 2;
 const INITIAL_GAP_PERCENT = 30;
 const MIN_GAP_PERCENT = 10;
@@ -31,6 +29,7 @@ export class GameScene extends Phaser.Scene {
   private sparkler!: Phaser.GameObjects.Particles.ParticleEmitter;
   private obstacles!: Phaser.GameObjects.Polygon[];
   private gapPercent!: number;
+  private obstaclePairCleared!: boolean;
   private microphoneModule: ReturnType<typeof configureMicrophoneModule>;
 
   public constructor() {
@@ -55,6 +54,7 @@ export class GameScene extends Phaser.Scene {
     this.noised = false;
     this.noisedRemainingMs = 0;
     this.gapPercent = INITIAL_GAP_PERCENT;
+    this.obstaclePairCleared = false;
 
     const searchParams = new URLSearchParams(window.location.search);
     this.physics.world.drawDebug = searchParams.has("debug");
@@ -123,6 +123,7 @@ export class GameScene extends Phaser.Scene {
       this.cameras.main.scrollX = 0;
       this.ship.y = windowHeight * 0.9;
       this.gapPercent = INITIAL_GAP_PERCENT;
+      this.obstaclePairCleared = false;
       this.obstacles.forEach((obstacle) => obstacle.destroy());
       this.obstacles = this.makeObstaclePair(
         windowWidth * 0.85,
@@ -137,7 +138,7 @@ export class GameScene extends Phaser.Scene {
       body.setAccelerationY(accelerationY);
       const scrollThisFrame = this.getScrollDistance(clampedDelta);
       this.cameras.main.scrollX += scrollThisFrame;
-      this.checkForCollision(scrollThisFrame);
+      this.checkForCollision();
     }
 
     if (this.tapped) {
@@ -191,7 +192,7 @@ export class GameScene extends Phaser.Scene {
     this.microphoneModule.microphoneOff();
   }
 
-  private checkForCollision(scrollThisFrame: number): void {
+  private checkForCollision(): void {
     const shipX = this.ship.x + this.cameras.main.scrollX;
     const shipY = this.ship.y;
 
@@ -206,20 +207,19 @@ export class GameScene extends Phaser.Scene {
       return;
     }
 
-    const obstacleCleared = this.obstacles.some((obstacle) => {
-      const right = Phaser.Geom.Polygon.GetAABB(obstacle.geom).right;
-      const dx = shipX - right;
-      return dx >= 0 && dx <= scrollThisFrame * 0.9;
-    });
-    if (obstacleCleared) {
+    const obstacleRight = Math.max(
+      ...this.obstacles.map(
+        (obstacle) => Phaser.Geom.Polygon.GetAABB(obstacle.geom).right
+      )
+    );
+
+    if (!this.obstaclePairCleared && shipX >= obstacleRight) {
+      this.obstaclePairCleared = true;
       this.game.events.emit(SparklerGameEvents.ObstacleCleared);
       this.createBurstParticleEmitter(this.ship.x, this.ship.y);
     }
 
-    const obstacleGone = this.obstacles.some((obstacle) => {
-      const right = Phaser.Geom.Polygon.GetAABB(obstacle.geom).right;
-      return right < this.cameras.main.scrollX;
-    });
+    const obstacleGone = obstacleRight < this.cameras.main.scrollX;
     if (obstacleGone) {
       if (this.gapPercent > MIN_GAP_PERCENT) {
         this.gapPercent -= 2;
@@ -232,6 +232,7 @@ export class GameScene extends Phaser.Scene {
         this.getObstacleWidth() +
         OBSTACLE_LINE_WIDTH;
       this.obstacles = this.makeObstaclePair(obstacleX, this.gapPercent);
+      this.obstaclePairCleared = false;
     }
   }
 
@@ -261,13 +262,14 @@ export class GameScene extends Phaser.Scene {
       speed: { start: 800, end: 200, steps: 5 },
       scale: { start: 0.06, end: 0.01 },
       lifespan: 800,
-      frequency: 80,
+      frequency: -1,
       quantity: 8,
-      maxParticles: 5 * 8,
+      maxParticles: 40,
       tint: 0xffffff,
     });
     emitter.setScrollFactor(0);
-    emitter.explode(40, x, y);
+    emitter.setDepth(10);
+    emitter.explode(40);
   }
 
   private resize(): void {
