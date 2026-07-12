@@ -8,8 +8,11 @@ const UPSTRUST = -1500;
 const OBSTACLE_LINE_WIDTH = 2;
 const INITIAL_GAP_PERCENT = 30;
 const MIN_GAP_PERCENT = 10;
-const TAPPED_UPDATE_COUNT_RESET_THRESHOLD = 5;
-const NOISED_UPDATE_COUNT_RESET_THRESHOLD = 5;
+const REFERENCE_FRAME_MS = 1000 / 60;
+const MAX_DELTA_MS = 50;
+const STIMULUS_FRAME_COUNT = 5;
+const TAP_STIMULUS_DURATION_MS = STIMULUS_FRAME_COUNT * REFERENCE_FRAME_MS;
+const NOISE_STIMULUS_DURATION_MS = STIMULUS_FRAME_COUNT * REFERENCE_FRAME_MS;
 
 enum GameState {
   Waiting,
@@ -21,9 +24,9 @@ export class GameScene extends Phaser.Scene {
   private gameState!: GameState;
   private firstStart!: boolean;
   private tapped!: boolean;
-  private tappedUpdateCount!: number;
+  private tappedRemainingMs!: number;
   private noised!: boolean;
-  private noisedUpdateCount!: number;
+  private noisedRemainingMs!: number;
   private ship!: Phaser.GameObjects.Rectangle;
   private sparkler!: Phaser.GameObjects.Particles.ParticleEmitter;
   private obstacles!: Phaser.GameObjects.Polygon[];
@@ -48,9 +51,9 @@ export class GameScene extends Phaser.Scene {
     this.gameState = GameState.Waiting;
     this.firstStart = true;
     this.tapped = false;
-    this.tappedUpdateCount = 0;
+    this.tappedRemainingMs = 0;
     this.noised = false;
-    this.noisedUpdateCount = 0;
+    this.noisedRemainingMs = 0;
     this.gapPercent = INITIAL_GAP_PERCENT;
 
     const searchParams = new URLSearchParams(window.location.search);
@@ -93,10 +96,11 @@ export class GameScene extends Phaser.Scene {
     );
   }
 
-  public update(_time: number, _delta: number) {
+  public update(_time: number, delta: number) {
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
     const body = this.ship.body as Phaser.Physics.Arcade.Body;
+    const clampedDelta = Math.min(delta, MAX_DELTA_MS);
 
     // One of the following:
     // - the UP ARROW key is pressed
@@ -128,34 +132,39 @@ export class GameScene extends Phaser.Scene {
     if (this.gameState == GameState.Running) {
       const accelerationY = gotInputStimulus ? UPSTRUST : 0;
       body.setAccelerationY(accelerationY);
-      this.cameras.main.scrollX += this.getSpeed();
-      this.checkForCollision();
+      const scrollThisFrame = this.getScrollDistance(clampedDelta);
+      this.cameras.main.scrollX += scrollThisFrame;
+      this.checkForCollision(scrollThisFrame);
     }
 
     if (this.tapped) {
-      if (this.tappedUpdateCount >= TAPPED_UPDATE_COUNT_RESET_THRESHOLD) {
+      this.tappedRemainingMs -= clampedDelta;
+      if (this.tappedRemainingMs <= 0) {
         this.tapped = false;
-        this.tappedUpdateCount = 0;
-      } else {
-        this.tappedUpdateCount++;
+        this.tappedRemainingMs = 0;
       }
     }
 
     if (this.noised) {
-      if (this.noisedUpdateCount >= NOISED_UPDATE_COUNT_RESET_THRESHOLD) {
+      this.noisedRemainingMs -= clampedDelta;
+      if (this.noisedRemainingMs <= 0) {
         this.noised = false;
-        this.noisedUpdateCount = 0;
-      } else {
-        this.noisedUpdateCount++;
+        this.noisedRemainingMs = 0;
       }
     }
   }
 
   private onPointerDown() {
+    if (!this.tapped) {
+      this.tappedRemainingMs = TAP_STIMULUS_DURATION_MS;
+    }
     this.tapped = true;
   }
 
   private onMicrophoneStimulus(_maxValue: number) {
+    if (!this.noised) {
+      this.noisedRemainingMs = NOISE_STIMULUS_DURATION_MS;
+    }
     this.noised = true;
   }
 
@@ -175,7 +184,7 @@ export class GameScene extends Phaser.Scene {
     this.microphoneModule.microphoneOff();
   }
 
-  private checkForCollision(): void {
+  private checkForCollision(scrollThisFrame: number): void {
     const shipX = this.ship.x + this.cameras.main.scrollX;
     const shipY = this.ship.y;
 
@@ -193,7 +202,7 @@ export class GameScene extends Phaser.Scene {
     const obstacleCleared = this.obstacles.some((obstacle) => {
       const right = Phaser.Geom.Polygon.GetAABB(obstacle.geom).right;
       const dx = shipX - right;
-      return dx >= 0 && dx <= this.getSpeed() * 0.9;
+      return dx >= 0 && dx <= scrollThisFrame * 0.9;
     });
     if (obstacleCleared) {
       this.game.events.emit(SparklerGameEvents.ObstacleCleared);
@@ -258,6 +267,10 @@ export class GameScene extends Phaser.Scene {
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
     this.scale.resize(windowWidth, windowHeight);
+  }
+
+  private getScrollDistance(delta: number): number {
+    return this.getSpeed() * (delta / REFERENCE_FRAME_MS);
   }
 
   private getSpeed() {
