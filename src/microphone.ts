@@ -1,22 +1,36 @@
 import "audioworklet-polyfill";
 import log from "loglevel";
 
-const max = (xs) => xs.reduce((acc, value) => (value > acc ? value : acc));
+export type MicrophoneModuleConfig = {
+  NOISE_LEVEL_THRESHOLD: number;
+  onNoiseLevelAboveThreshold: (maxValue: number) => void;
+};
 
-// type MicrophoneModuleConfig = {
-//   NOISE_LEVEL_THRESHOLD: number,
-//   onNoiseLevelAboveThreshold: (maxValue: number) => void
-// }
+export interface MicrophoneModule {
+  microphoneOn: () => Promise<void>;
+  microphoneOff: () => void;
+}
 
-// interface MicrophoneModule {
-//   microphoneOn: () => Promise<void>
-//   microphoneOff: () => void
-// }
+const max = (xs: ArrayLike<number>): number => {
+  let result = -Infinity;
+  for (let i = 0; i < xs.length; i++) {
+    const value = xs[i];
+    if (value > result) {
+      result = value;
+    }
+  }
+  return result;
+};
 
-// type ConfigureMicrophoneModule = (config: MicrophoneModuleConfig) => MicrophoneModule
-
-export default (config) => {
-  const audioState = {
+const configureMicrophoneModule = (
+  config: MicrophoneModuleConfig
+): MicrophoneModule => {
+  const audioState: {
+    pending: boolean;
+    audioContext: AudioContext | undefined;
+    mediaStream: MediaStream | undefined;
+    microphoneOn: boolean;
+  } = {
     pending: false,
     audioContext: undefined,
     mediaStream: undefined,
@@ -24,16 +38,15 @@ export default (config) => {
   };
 
   class StreamWorklet extends AudioWorkletNode {
-    constructor(audioContext, name) {
+    constructor(audioContext: AudioContext, name: string) {
       log.info(
         `[StreamWorklet#constructor] name: ${name}; sampleRate: ${audioContext.sampleRate}`
       );
       super(audioContext, name);
-      this.port.onmessage = (message) => {
+      this.port.onmessage = (message: MessageEvent<Float32Array>) => {
         log.info("[StreamWorklet#onMessage]");
         if (!audioState.microphoneOn) return;
-        const channelData = message.data;
-        const maxValue = max(channelData);
+        const maxValue = max(message.data);
         if (maxValue >= config.NOISE_LEVEL_THRESHOLD) {
           config.onNoiseLevelAboveThreshold(maxValue);
         }
@@ -41,7 +54,7 @@ export default (config) => {
     }
   }
 
-  const microphoneOn = async () => {
+  const microphoneOn = async (): Promise<void> => {
     try {
       log.info("[microphoneOn]");
       audioState.pending = true;
@@ -67,17 +80,22 @@ export default (config) => {
         throw new Error("navigator.mediaDevices.getUserMedia not found");
       }
     } catch (error) {
-      log.error(`[microphoneOn] ${error.message}`);
+      const message = error instanceof Error ? error.message : String(error);
+      log.error(`[microphoneOn] ${message}`);
       throw error;
     } finally {
       audioState.pending = false;
     }
   };
 
-  const microphoneOff = () => {
+  const microphoneOff = (): void => {
     try {
       log.info("[microphoneOff]");
-      if (audioState.microphoneOn) {
+      if (
+        audioState.microphoneOn &&
+        audioState.mediaStream &&
+        audioState.audioContext
+      ) {
         audioState.mediaStream.getTracks().forEach((track) => track.stop());
         audioState.audioContext.close();
         audioState.audioContext = undefined;
@@ -85,7 +103,8 @@ export default (config) => {
         audioState.microphoneOn = false;
       }
     } catch (error) {
-      log.error(`[microphoneOff] ${error.message}`);
+      const message = error instanceof Error ? error.message : String(error);
+      log.error(`[microphoneOff] ${message}`);
     }
   };
 
@@ -94,3 +113,5 @@ export default (config) => {
     microphoneOff,
   };
 };
+
+export default configureMicrophoneModule;

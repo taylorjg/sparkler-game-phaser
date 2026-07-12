@@ -2,13 +2,12 @@ import * as Phaser from "phaser";
 import { createTextBig } from "@app/ui";
 import { applyAnchor, layoutVertical } from "@app/layout";
 import { SparklerGameEvents } from "@app/constants";
-import * as T from "@app/types";
 
 export class GameOverPanel {
   private gameOverPanel: Phaser.GameObjects.Container;
-  private scene: T.HUDSceneLike;
+  private scene: Phaser.Scene;
 
-  public constructor(scene: T.HUDSceneLike) {
+  public constructor(scene: Phaser.Scene) {
     this.scene = scene;
 
     const textLine1 = createTextBig(scene, "GAME OVER");

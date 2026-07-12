@@ -1,6 +1,5 @@
 import * as Phaser from "phaser";
 import { FontKeys } from "./constants";
-import * as T from "./types";
 
 const FONT_COLOUR = 0x800080;
 
@@ -19,7 +18,7 @@ const getFontSizeSmall = () => {
 };
 
 export const createTextBig = (
-  scene: T.HUDSceneLike,
+  scene: Phaser.Scene,
   text: string
 ): Phaser.GameObjects.BitmapText => {
   const fontSize = getFontSizeBig();
@@ -29,7 +28,7 @@ export const createTextBig = (
 };
 
 export const createTextSmall = (
-  scene: T.HUDSceneLike,
+  scene: Phaser.Scene,
   text: string
 ): Phaser.GameObjects.BitmapText => {
   const fontSize = getFontSizeSmall();

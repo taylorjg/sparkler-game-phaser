@@ -1,5 +1,5 @@
 import * as Phaser from "phaser";
-import configureMicrophoneModule from "./microphone.js";
+import configureMicrophoneModule from "./microphone";
 import { ParticleKeys, SceneKeys, SparklerGameEvents } from "./constants";
 
 // const SCROLL_X_SPEED = 8
@@ -11,29 +11,24 @@ const MIN_GAP_PERCENT = 10;
 const TAPPED_UPDATE_COUNT_RESET_THRESHOLD = 5;
 const NOISED_UPDATE_COUNT_RESET_THRESHOLD = 5;
 
-interface MicrophoneModule {
-  microphoneOn: () => Promise<void>;
-  microphoneOff: () => void;
-}
-
 enum GameState {
   Waiting,
   Running,
 }
 
 export class GameScene extends Phaser.Scene {
-  private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
-  private gameState: GameState;
-  private firstStart: boolean;
-  private tapped: boolean;
-  private tappedUpdateCount: number;
-  private noised: boolean;
-  private noisedUpdateCount: number;
-  private ship: Phaser.GameObjects.Rectangle;
-  private sparkler: Phaser.GameObjects.Particles.ParticleEmitter;
-  private obstacles: Phaser.GameObjects.Polygon[];
-  private gapPercent: number;
-  private microphoneModule: MicrophoneModule;
+  private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
+  private gameState!: GameState;
+  private firstStart!: boolean;
+  private tapped!: boolean;
+  private tappedUpdateCount!: number;
+  private noised!: boolean;
+  private noisedUpdateCount!: number;
+  private ship!: Phaser.GameObjects.Rectangle;
+  private sparkler!: Phaser.GameObjects.Particles.ParticleEmitter;
+  private obstacles!: Phaser.GameObjects.Polygon[];
+  private gapPercent!: number;
+  private microphoneModule: ReturnType<typeof configureMicrophoneModule>;
 
   public constructor() {
     super(SceneKeys.Game);
@@ -49,7 +44,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   public create() {
-    this.cursors = this.input.keyboard.createCursorKeys();
+    this.cursors = this.input.keyboard!.createCursorKeys();
     this.gameState = GameState.Waiting;
     this.firstStart = true;
     this.tapped = false;
@@ -169,8 +164,9 @@ export class GameScene extends Phaser.Scene {
     try {
       await this.microphoneModule.microphoneOn();
     } catch (error) {
-      console.error("[onMicrophoneOn]", error.message);
-      this.game.events.emit(SparklerGameEvents.MicrophoneError, error.message);
+      const message = error instanceof Error ? error.message : String(error);
+      console.error("[onMicrophoneOn]", message);
+      this.game.events.emit(SparklerGameEvents.MicrophoneError, message);
     }
   }
 

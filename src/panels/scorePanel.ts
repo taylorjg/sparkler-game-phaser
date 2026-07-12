@@ -2,15 +2,14 @@ import * as Phaser from "phaser";
 import { createTextBig } from "@app/ui";
 import { applyAnchor } from "@app/layout";
 import { SparklerGameEvents } from "@app/constants";
-import * as T from "@app/types";
 
 export class ScorePanel {
   private score: number;
   private scoreText: Phaser.GameObjects.BitmapText;
   private container: Phaser.GameObjects.Container;
-  private scene: T.HUDSceneLike;
+  private scene: Phaser.Scene;
 
-  public constructor(scene: T.HUDSceneLike) {
+  public constructor(scene: Phaser.Scene) {
     this.scene = scene;
     this.scoreText = createTextBig(scene, "");
     this.container = scene.add.container(0, 0, [this.scoreText]);

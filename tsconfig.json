@@ -15,8 +15,5 @@
     "noEmit": true
   },
   "references": [{ "path": "./tsconfig.node.json" }],
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.js"
-  ]
+  "include": ["src/**/*.ts"]
 }

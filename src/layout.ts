@@ -16,8 +16,8 @@ type Transform = Phaser.GameObjects.GameObject &
 const hasSetOrigin = (
   gameObject: Transform
 ): gameObject is Transform & Phaser.GameObjects.Components.Origin =>
-  typeof (gameObject as Phaser.GameObjects.Components.Origin).setOrigin ===
-  "function";
+  typeof (gameObject as unknown as Phaser.GameObjects.Components.Origin)
+    .setOrigin === "function";
 
 const parseEdgeOffset = (value: string, size: number): number => {
   if (value.startsWith("left+")) {

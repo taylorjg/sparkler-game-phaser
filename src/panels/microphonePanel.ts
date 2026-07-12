@@ -3,7 +3,6 @@ import { promisifyDelayedCall } from "@app/promisifyThings";
 import { createTextSmall } from "@app/ui";
 import { applyAnchor, createAnchoredContainer } from "@app/layout";
 import { ImageKeys, SparklerGameEvents } from "@app/constants";
-import * as T from "@app/types";
 
 const SHOW_MICROPHONE_ERROR_FOR = 5000;
 const AUTO_TURN_OFF_PERIOD = 10000;
@@ -12,10 +11,10 @@ export class MicrophonePanel {
   private icon: Phaser.GameObjects.Image;
   private muteLine: Phaser.GameObjects.Line;
   private microphonePanel: Phaser.GameObjects.Container;
-  private scene: T.HUDSceneLike;
-  private autoTurnOffTimeoutId: NodeJS.Timeout;
+  private scene: Phaser.Scene;
+  private autoTurnOffTimeoutId: ReturnType<typeof setTimeout> | null;
 
-  public constructor(scene: T.HUDSceneLike) {
+  public constructor(scene: Phaser.Scene) {
     this.scene = scene;
     this.autoTurnOffTimeoutId = null;
 
@@ -110,12 +109,16 @@ export class MicrophonePanel {
   }
 
   private onGameStarted(): void {
-    clearTimeout(this.autoTurnOffTimeoutId);
+    if (this.autoTurnOffTimeoutId != null) {
+      clearTimeout(this.autoTurnOffTimeoutId);
+    }
     this.autoTurnOffTimeoutId = null;
   }
 
   private onGameEnded(): void {
-    clearTimeout(this.autoTurnOffTimeoutId);
+    if (this.autoTurnOffTimeoutId != null) {
+      clearTimeout(this.autoTurnOffTimeoutId);
+    }
     this.autoTurnOffTimeoutId = null;
 
     const callback = () => {

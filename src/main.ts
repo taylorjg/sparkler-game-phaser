@@ -31,7 +31,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
 };
 
 const setVersion = () => {
-  document.querySelector("#version").innerHTML = version;
+  document.querySelector("#version")!.innerHTML = version;
 };
 
 setVersion();
