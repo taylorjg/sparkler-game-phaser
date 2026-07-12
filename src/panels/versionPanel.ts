@@ -1,6 +1,6 @@
 import * as Phaser from "phaser";
-import { createTextSmall } from "@app/ui";
-import { applyAnchor } from "@app/layout";
+import { createTextSmall } from "@app/ui/ui";
+import { applyAnchor } from "@app/ui/layout";
 import { version } from "../../package.json";
 
 const VERSION_TINT = 0x666666;

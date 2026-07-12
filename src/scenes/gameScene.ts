@@ -1,6 +1,6 @@
 import * as Phaser from "phaser";
-import configureMicrophoneModule from "./microphone";
-import { ParticleKeys, SceneKeys, SparklerGameEvents } from "./constants";
+import configureMicrophoneModule from "@app/audio/microphone";
+import { ParticleKeys, SceneKeys, SparklerGameEvents } from "@app/constants";
 
 const UP_THRUST = -1500;
 const OBSTACLE_LINE_WIDTH = 2;

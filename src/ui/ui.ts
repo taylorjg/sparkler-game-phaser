@@ -1,5 +1,5 @@
 import * as Phaser from "phaser";
-import { FontKeys } from "./constants";
+import { FontKeys } from "@app/constants";
 
 const FONT_COLOUR = 0x800080;
 

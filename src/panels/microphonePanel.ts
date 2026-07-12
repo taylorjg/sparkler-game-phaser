@@ -1,7 +1,7 @@
 import * as Phaser from "phaser";
 import { promisifyDelayedCall } from "@app/promisifyThings";
-import { createTextSmall } from "@app/ui";
-import { applyAnchor, createAnchoredContainer } from "@app/layout";
+import { createTextSmall } from "@app/ui/ui";
+import { applyAnchor, createAnchoredContainer } from "@app/ui/layout";
 import { ImageKeys, SparklerGameEvents } from "@app/constants";
 
 const SHOW_MICROPHONE_ERROR_FOR = 5000;

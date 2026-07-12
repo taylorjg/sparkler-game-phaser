@@ -1,6 +1,6 @@
 import * as Phaser from "phaser";
-import { createTextBig } from "@app/ui";
-import { applyAnchor, layoutVertical } from "@app/layout";
+import { createTextBig } from "@app/ui/ui";
+import { applyAnchor, layoutVertical } from "@app/ui/layout";
 import { SparklerGameEvents } from "@app/constants";
 
 export class GameOverPanel {

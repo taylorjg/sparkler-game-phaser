@@ -1,6 +1,6 @@
 import * as Phaser from "phaser";
-import { createTextBig } from "@app/ui";
-import { applyAnchor } from "@app/layout";
+import { createTextBig } from "@app/ui/ui";
+import { applyAnchor } from "@app/ui/layout";
 import { SparklerGameEvents } from "@app/constants";
 
 export class ScorePanel {
