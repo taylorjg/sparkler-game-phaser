@@ -1,50 +1,71 @@
-# Description
+# Sparkler Game (Phaser)
 
-This is my attempt to recreate Seb Lee-Delisle's interactive sparkler game as seen in the second of the Royal Institution Christmas lectures with Dr Hannah Fry on 27 December 2019. The game used the audience noise level to guide a sparkler between a scrolling sequence of obstacles.
+Recreate Seb Lee-Delisle's interactive sparkler game from the second Royal Institution Christmas Lecture with Dr Hannah Fry (27 December 2019). The audience used noise to guide a sparkler through a scrolling sequence of obstacles — this version lets you play the same game in the browser.
+
+**Play:** [taylorjg.github.io/sparkler-game-phaser](https://taylorjg.github.io/sparkler-game-phaser/)
 
 ![Stills Collage](images/stills-collage.jpg)
 
-# Playing Instructions
+## Playing
 
-You can control the game in one of the following ways:
+You can control the sparkler in one of three ways:
 
-* Using the UP ARROW key
-* By clicking/tapping the window
-* By making some noise (after turning on the microphone by clicking the icon in the bottom right corner of the window)
+- **Up arrow** — tap the key for a short burst of thrust (same feel as clicking)
+- **Click / tap** — anywhere in the game window
+- **Microphone** — make noise after enabling the mic icon (bottom right)
 
-# Dev Instructions
+## Technologies
 
-Requires Node 18 or later.
+| Area | Stack |
+|------|--------|
+| **Game engine** | [Phaser 4](https://phaser.io/) (WebGL, Arcade physics, particles) |
+| **Language** | [TypeScript](https://www.typescriptlang.org/) |
+| **Build / dev server** | [Vite 8](https://vite.dev/) |
+| **Audio input** | Web Audio API (`AudioContext`, `AudioWorklet`) with [audioworklet-polyfill](https://www.npmjs.com/package/audioworklet-polyfill) |
+| **Logging** | [loglevel](https://www.npmjs.com/package/loglevel) (microphone module) |
+| **Font** | **Cosmic Avenger** bitmap font (`arcade` — BMFont atlas in `public/assets/fonts/`) |
+| **Lint / format** | [ESLint 10](https://eslint.org/), [Prettier](https://prettier.io/), [typescript-eslint](https://typescript-eslint.io/) |
+| **Hosting** | [GitHub Pages](https://pages.github.com/) via [gh-pages](https://www.npmjs.com/package/gh-pages) |
+| **CI/CD** | GitHub Actions (lint, typecheck, build on push; deploy on tag) |
 
-## Running Locally
+## Development
 
-```
+Requires **Node.js 24** (see `.nvmrc`; Node 18+ may work per `package.json` engines).
+
+### Run locally
+
+```bash
 npm install
 npm run dev
 ```
 
-Opens at http://localhost:5173/sparkler-game-phaser/
+Opens at [http://localhost:5173/sparkler-game-phaser/](http://localhost:5173/sparkler-game-phaser/)
 
-## Building
+### Scripts
 
-```
-rm -rf dist
-npm run build
-```
+| Command | Purpose |
+|---------|---------|
+| `npm run dev` | Vite dev server |
+| `npm run build` | Production build to `dist/` |
+| `npm run preview` | Preview production build |
+| `npm run lint` | ESLint |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npm run deploy` | Build and push `dist/` to `gh-pages` branch |
 
-## Deploying (to gh-pages)
+### CI/CD
 
-```
+On every push, GitHub Actions runs `lint`, `typecheck`, and `build`. Pushing a **version tag** (e.g. `v0.0.19`) also deploys to GitHub Pages after checks pass.
+
+### Manual deploy
+
+```bash
 npm run deploy
 ```
 
-# Links
+## Links
 
-* [Christmas Lectures 2019: How to Bend the Rules - Hannah Fry](https://youtu.be/TtisQ9yZ2zo?t=563)
-* [Christmas Lectures 2019 Secrets and lies](https://www.rigb.org/christmas-lectures/watch/2019/secrets-and-lies)
-* [Seb Lee-Delisle &#8211; Laser artist and presenter](https://seblee.me/)
-* Phaser:
-  * [Phaser - A fast, fun and free open source HTML5 game framework](https://phaser.io/)
-  * [Phaser API Documentation](https://docs.phaser.io/)
-* My earlier attempt using only vanilla JavaScript:
-  * [sparkler-game](https://github.com/taylorjg/sparkler-game)
+- [Christmas Lectures 2019: How to Bend the Rules — Hannah Fry](https://youtu.be/TtisQ9yZ2zo?t=563)
+- [Christmas Lectures 2019: Secrets and Lies](https://www.rigb.org/christmas-lectures/watch/2019/secrets-and-lies)
+- [Seb Lee-Delisle — laser artist and presenter](https://seblee.me/)
+- [Phaser](https://phaser.io/) · [Phaser docs](https://docs.phaser.io/)
+- Earlier vanilla JS version: [sparkler-game](https://github.com/taylorjg/sparkler-game)
