@@ -57,7 +57,7 @@ src/
 
 4. **Rename or prune `promisifyThings.ts`** — `promisifyTween` is unused; only `promisifyDelayedCall` is used. Something like `utils/async.ts` would be clearer.
 
-5. **Remove orphan `src/components/`** — duplicate `scorePanel`, `microphonePanel`, `gameOverPanel` files; nothing imports them (superseded by `src/panels/`).
+5. ~~**Remove orphan `src/components/`**~~ — **Done** (moved to `src/panels/` in commit `5f15c2a`; `hud.ts` imports from `@app/panels/...`).
 
 ---
 
@@ -138,7 +138,7 @@ If you want the best ROI with minimal churn:
 2. ~~Convert `microphone.js` → `microphone.ts`~~ — **Done**
 3. Unify on `scene.scale` for dimensions and resize — see [RESIZE.md](RESIZE.md)
 4. Add `shutdown()` cleanup for listeners and burst emitters
-5. Prune `src/components/` orphans; standardize `@app/` imports
+5. Standardize `@app/` imports in `hud.ts` and elsewhere
 6. Reorganize into `scenes/` when you next touch those files
 
 ---
