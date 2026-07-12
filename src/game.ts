@@ -102,12 +102,15 @@ export class GameScene extends Phaser.Scene {
     const body = this.ship.body as Phaser.Physics.Arcade.Body;
     const clampedDelta = Math.min(delta, MAX_DELTA_MS);
 
+    if (Phaser.Input.Keyboard.JustDown(this.cursors.up)) {
+      this.triggerFlap();
+    }
+
     // One of the following:
-    // - the UP ARROW key is pressed
+    // - the UP ARROW key was pressed (short flap, same as tap)
     // - the screen has been clicked or tapped
     // - a certain level of sound has been picked up by the microphone
-    const gotInputStimulus =
-      this.cursors.up.isDown || this.tapped || this.noised;
+    const gotInputStimulus = this.tapped || this.noised;
 
     if (this.gameState == GameState.Waiting && gotInputStimulus) {
       if (this.firstStart) {
@@ -154,11 +157,15 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
-  private onPointerDown() {
+  private triggerFlap(): void {
     if (!this.tapped) {
       this.tappedRemainingMs = TAP_STIMULUS_DURATION_MS;
     }
     this.tapped = true;
+  }
+
+  private onPointerDown() {
+    this.triggerFlap();
   }
 
   private onMicrophoneStimulus(_maxValue: number) {
