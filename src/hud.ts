@@ -2,6 +2,7 @@ import * as Phaser from "phaser";
 import { ScorePanel } from "@app/panels/scorePanel";
 import { MicrophonePanel } from "@app/panels/microphonePanel";
 import { GameOverPanel } from "@app/panels/gameOverPanel";
+import { VersionPanel } from "@app/panels/versionPanel";
 import { FontKeys, ImageKeys, SceneKeys } from "./constants";
 
 export class HUDScene extends Phaser.Scene {
@@ -25,5 +26,6 @@ export class HUDScene extends Phaser.Scene {
     new ScorePanel(this);
     new MicrophonePanel(this);
     new GameOverPanel(this);
+    new VersionPanel(this);
   }
 }

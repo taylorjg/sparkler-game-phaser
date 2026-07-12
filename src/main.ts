@@ -1,7 +1,6 @@
 import * as Phaser from "phaser";
 import { GameScene } from "./game";
 import { HUDScene } from "./hud";
-import { version } from "../package.json";
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
   title: "Sparkler Game",
@@ -30,9 +29,4 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
   },
 };
 
-const setVersion = () => {
-  document.querySelector("#version")!.innerHTML = version;
-};
-
-setVersion();
 new Phaser.Game(gameConfig);
