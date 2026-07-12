@@ -1,5 +1,5 @@
 import * as Phaser from "phaser";
-import { createTextBig } from "@app/ui/ui";
+import { createTextBig } from "@app/ui/typography";
 import { applyAnchor, layoutVertical } from "@app/ui/layout";
 import { SparklerGameEvents } from "@app/constants";
 

@@ -1,5 +1,5 @@
 import * as Phaser from "phaser";
-import { createTextSmall } from "@app/ui/ui";
+import { createTextSmall } from "@app/ui/typography";
 import { applyAnchor } from "@app/ui/layout";
 import { version } from "../../package.json";
 
