@@ -1,1 +1,12 @@
-console.log("[src/stream-processor.js]");class StreamProcessor extends AudioWorkletProcessor{process(s){const r=s[0][0];return this.port.postMessage(r),!0}}registerProcessor("stream-processor",StreamProcessor);
+console.log("[public/stream-processor.js]");
+
+class StreamProcessor extends AudioWorkletProcessor {
+  process(inputs) {
+    const input = inputs[0];
+    const channelData = input[0];
+    this.port.postMessage(channelData);
+    return true;
+  }
+}
+
+registerProcessor("stream-processor", StreamProcessor);
