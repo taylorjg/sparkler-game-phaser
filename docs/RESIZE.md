@@ -24,12 +24,12 @@ That updates the canvas size and fires Phaser's `RESIZE` event.
 | **Game logic (speed, gap %, new obstacles)** | Partially good — `getSpeed()`, `getObstacleWidth()`, etc. read `window.innerWidth/innerHeight` each frame |
 | **Ship position** | Stale — set once in `create()` at `width * 0.15`; only Y resets on restart |
 | **Existing obstacles** | Stale — polygon paths baked at old `windowHeight`; not rebuilt on resize |
-| **Font sizes** | Stale — `ui.ts` picks size at creation from `window.inner*`; no resize hook |
+| **Font sizes** | Stale — `typography.ts` picks size at creation from `window.inner*`; no resize hook |
 | **Scale mode** | `Phaser.Scale.NONE` — 1 canvas pixel = 1 game pixel, no automatic fit/letterbox |
 
 So after a resize: HUD moves to the corners, but the ship, obstacles, and text sizes can drift relative to the new window.
 
-There's also a split source of truth: HUD uses `scene.scale`, game uses `window.inner*` (see also `IMPROVEMENTS.md`).
+There's also a split source of truth: HUD uses `scene.scale`, game uses `window.inner*` (see also [IMPROVEMENTS.md](IMPROVEMENTS.md)).
 
 ---
 
@@ -60,7 +60,7 @@ This is the easiest “everything scales to fit” approach if you're OK with a 
 
 ### 2. Keep `NONE`, unify on `scene.scale` + relayout hook
 
-Replace `window.innerWidth/innerHeight` in `game.ts` and `ui.ts` with `this.scale.width/height` (or pass dimensions in).
+Replace `window.innerWidth/innerHeight` in `game-scene.ts` and `typography.ts` with `this.scale.width/height` (or pass dimensions in).
 
 On resize, do more than `scale.resize()`:
 
@@ -111,4 +111,4 @@ There isn't one call that fixes everything today because game objects are positi
 
 ---
 
-*Generated: July 2026*
+*Original: July 2026 · Last updated: July 2026*

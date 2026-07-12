@@ -8,20 +8,20 @@ Suggested testing roadmap for sparkler-game-phaser. There is no test runner yet 
 
 ## Highest ROI (pure logic, minimal Phaser)
 
-These give the most value for the least setup. Some helpers are private today; exporting or extracting them (as in the `obstacles.ts` / `gameConfig.ts` split in `IMPROVEMENTS.md`) would make testing much easier.
+These give the most value for the least setup. Some helpers are private today; exporting or extracting them (as in the `obstacles.ts` / `game-config.ts` split in [IMPROVEMENTS.md](IMPROVEMENTS.md)) would make testing much easier.
 
-### Layout (`layout.ts`)
+### Layout (`src/ui/layout.ts`)
 
 - **`parseEdgeOffset`** — `"left+20"` → `20`, `"right-20"` on width 800 → `780`, unknown string → `0`
 - **`applyAnchor`** — with a mocked scene (`scale.width/height`) and a fake game object with `setOrigin` / `setPosition`, verify each anchor combo (`left+20`, `centerX`, `bottom-20`, etc.)
 - **`layoutVertical`** — given children with known `displayWidth` / `displayHeight`, assert vertical stacking, centering, and returned total height
 
-### UI sizing (`ui.ts`)
+### Typography sizing (`src/ui/typography.ts`)
 
 - **Font size breakpoint** — at max dimension ≤ 640 → big 24 / small 8; above → 48 / 16  
   (Would need extracting `getFontSizeBig` / `getFontSizeSmall` or passing dimensions in. Font size is still set only at creation — no resize refresh yet; see [RESIZE.md](RESIZE.md).)
 
-### Game tuning (`game.ts`)
+### Game tuning (`src/scenes/game-scene.ts`)
 
 Worth extracting first, then testing:
 
@@ -42,7 +42,7 @@ Regression test for Phaser 4 API: emitter created at `(x, y)` must call `explode
 
 ## Good unit tests with mocks
 
-### Microphone (`microphone.ts`)
+### Microphone (`src/audio/microphone.ts`)
 
 Mock `navigator.mediaDevices.getUserMedia`, `AudioContext`, and `audioWorklet.addModule`:
 
@@ -55,14 +55,14 @@ Mock `navigator.mediaDevices.getUserMedia`, `AudioContext`, and `audioWorklet.ad
 
 Lightweight mocks for `scene.add`, `scene.game.events`, `scene.scale`:
 
-| Panel | Suggested tests |
-|-------|-----------------|
-| **ScorePanel** | `GameStarted` → score 0; each `ObstacleCleared` → +1; text updates |
-| **GameOverPanel** | hidden on `GameStarted`, visible on `GameEnded` |
-| **MicrophonePanel** | click toggles mute line + emits `MicrophoneOn`/`MicrophoneOff`; `GameEnded` schedules auto-mute after 10s; `GameStarted` cancels pending auto-mute; `MicrophoneError` hides icon and shows error UI |
-| **VersionPanel** | shows `v{package.json version}`; re-anchors bottom-left on `RESIZE` |
+| Panel | File | Suggested tests |
+|-------|------|-----------------|
+| **ScorePanel** | `score-panel.ts` | `GameStarted` → score 0; each `ObstacleCleared` → +1; text updates |
+| **GameOverPanel** | `gameover-panel.ts` | hidden on `GameStarted`, visible on `GameEnded` |
+| **MicrophonePanel** | `microphone-panel.ts` | click toggles mute line + emits `MicrophoneOn`/`MicrophoneOff`; `GameEnded` schedules auto-mute after 10s; `GameStarted` cancels pending auto-mute; `MicrophoneError` hides icon and shows error UI |
+| **VersionPanel** | `version-panel.ts` | shows `v{package.json version}`; re-anchors bottom-left on `RESIZE` |
 
-### Async helpers (`promisifyThings.ts`)
+### Async helpers (`src/promisify-things.ts`)
 
 - **`promisifyDelayedCall`** — mock `scene.time.delayedCall`, assert it resolves after the delay fires
 - **`promisifyTween`** — mock tween + `once(TWEEN_COMPLETE)` (currently unused, lower priority)
