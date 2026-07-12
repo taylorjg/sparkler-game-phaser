@@ -1,8 +1,8 @@
 import * as Phaser from "phaser";
-import { ScorePanel } from "@app/panels/scorePanel";
-import { MicrophonePanel } from "@app/panels/microphonePanel";
-import { GameOverPanel } from "@app/panels/gameOverPanel";
-import { VersionPanel } from "@app/panels/versionPanel";
+import { ScorePanel } from "@app/panels/score-panel";
+import { MicrophonePanel } from "@app/panels/microphone-panel";
+import { GameOverPanel } from "@app/panels/gameover-panel";
+import { VersionPanel } from "@app/panels/version-panel";
 import { FontKeys, ImageKeys, SceneKeys } from "@app/constants";
 
 export class HUDScene extends Phaser.Scene {
