@@ -18,7 +18,7 @@ export const SceneKeys = {
 export type SceneKey = (typeof SceneKeys)[keyof typeof SceneKeys];
 
 export const FontKeys = {
-  Arcade: "arcade",
+  VectorBattle: "VectorBattle",
 } as const;
 
 export type FontKey = (typeof FontKeys)[keyof typeof FontKeys];

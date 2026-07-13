@@ -5,7 +5,7 @@ import { SparklerGameEvents } from "@app/constants";
 
 export class ScorePanel {
   private score: number;
-  private scoreText: Phaser.GameObjects.BitmapText;
+  private scoreText: Phaser.GameObjects.Text;
   private container: Phaser.GameObjects.Container;
   private scene: Phaser.Scene;
 
