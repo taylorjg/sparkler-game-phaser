@@ -1,21 +1,19 @@
 import * as Phaser from "phaser";
 import { FontKeys } from "@app/constants";
 
-const FONT_COLOUR = "#ff55ff";
+export const HUD_FONT_COLOUR = "#ff55ff";
+export const HUD_FONT_COLOUR_MUTED = "#cc66cc";
 
-const getFontSizeBig = () => {
-  const windowWidth = window.innerWidth;
-  const windowHeight = window.innerHeight;
-  const maxDimension = Math.max(windowWidth, windowHeight);
-  return maxDimension <= 640 ? 24 : 48;
-};
+const FONT_COLOUR = HUD_FONT_COLOUR;
 
-const getFontSizeSmall = () => {
-  const windowWidth = window.innerWidth;
-  const windowHeight = window.innerHeight;
-  const maxDimension = Math.max(windowWidth, windowHeight);
-  return maxDimension <= 640 ? 8 : 16;
-};
+const getMaxDimension = () => Math.max(window.innerWidth, window.innerHeight);
+
+const getResponsiveFontSize = (compact: number, spacious: number) =>
+  getMaxDimension() <= 640 ? compact : spacious;
+
+const getFontSizeBig = () => getResponsiveFontSize(24, 48);
+const getFontSizeSmall = () => getResponsiveFontSize(12, 18);
+const getFontSizeVerySmall = () => getResponsiveFontSize(10, 14);
 
 const getFontPadding = (fontSize: number) => ({
   top: Math.max(2, Math.ceil(fontSize * 0.2)),
@@ -42,8 +40,18 @@ export const createTextBig = (
 
 export const createTextSmall = (
   scene: Phaser.Scene,
-  text: string
+  text: string,
+  color = FONT_COLOUR
 ): Phaser.GameObjects.Text => {
   const fontSize = getFontSizeSmall();
-  return scene.add.text(0, 0, text, createHudTextStyle(fontSize));
+  return scene.add.text(0, 0, text, createHudTextStyle(fontSize, color));
+};
+
+export const createTextVerySmall = (
+  scene: Phaser.Scene,
+  text: string,
+  color = HUD_FONT_COLOUR_MUTED
+): Phaser.GameObjects.Text => {
+  const fontSize = getFontSizeVerySmall();
+  return scene.add.text(0, 0, text, createHudTextStyle(fontSize, color));
 };
