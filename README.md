@@ -20,17 +20,17 @@ You can control the sparkler in one of three ways:
 |------|--------|
 | **Game engine** | [Phaser 4](https://phaser.io/) (WebGL, Arcade physics, particles) |
 | **Language** | [TypeScript](https://www.typescriptlang.org/) |
-| **Build / dev server** | [Vite 8](https://vite.dev/) |
+| **Build / dev server** | [Vite](https://vite.dev/) |
 | **Audio input** | Web Audio API (`AudioContext`, `AudioWorklet`) with [audioworklet-polyfill](https://www.npmjs.com/package/audioworklet-polyfill) |
 | **Logging** | [loglevel](https://www.npmjs.com/package/loglevel) (microphone module) |
-| **Font** | **Cosmic Avenger** bitmap font (`arcade` — BMFont atlas in `public/assets/fonts/`) |
-| **Lint / format** | [ESLint 10](https://eslint.org/), [Prettier](https://prettier.io/), [typescript-eslint](https://typescript-eslint.io/) |
+| **Font** | [Vector Battle](https://www.dafont.com/vector-battle.font) TrueType (`VectorBattle.ttf` in `public/assets/fonts/`, loaded via Phaser and styled in `src/ui/typography.ts`) |
+| **Lint / format** | [ESLint](https://eslint.org/), [Prettier](https://prettier.io/), [typescript-eslint](https://typescript-eslint.io/) |
 | **Hosting** | [GitHub Pages](https://pages.github.com/) via [gh-pages](https://www.npmjs.com/package/gh-pages) |
 | **CI/CD** | GitHub Actions (lint, typecheck, build on push; deploy on tag) |
 
 ## Development
 
-Requires **Node.js 24** (see `.nvmrc`; Node 18+ may work per `package.json` engines).
+Requires **Node.js 24** (see `.nvmrc`).
 
 ### Run locally
 

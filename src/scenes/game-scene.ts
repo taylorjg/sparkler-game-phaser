@@ -6,6 +6,8 @@ const UP_THRUST = -1500;
 const OBSTACLE_LINE_WIDTH = 2;
 const INITIAL_GAP_PERCENT = 30;
 const MIN_GAP_PERCENT = 10;
+const SPEED_RAMP_DURATION_MS = 60_000;
+const MAX_SPEED_MULTIPLIER = 1.75;
 const REFERENCE_FRAME_MS = 1000 / 60;
 const MAX_DELTA_MS = 50;
 const STIMULUS_FRAME_COUNT = 5;
@@ -30,6 +32,7 @@ export class GameScene extends Phaser.Scene {
   private obstacles!: Phaser.GameObjects.Polygon[];
   private gapPercent!: number;
   private obstaclePairCleared!: boolean;
+  private runningElapsedMs!: number;
   private microphoneModule: ReturnType<typeof configureMicrophoneModule>;
 
   public constructor() {
@@ -55,6 +58,7 @@ export class GameScene extends Phaser.Scene {
     this.noisedRemainingMs = 0;
     this.gapPercent = INITIAL_GAP_PERCENT;
     this.obstaclePairCleared = false;
+    this.runningElapsedMs = 0;
 
     const searchParams = new URLSearchParams(window.location.search);
     this.physics.world.drawDebug = searchParams.has("debug");
@@ -118,6 +122,7 @@ export class GameScene extends Phaser.Scene {
       this.ship.y = height * 0.9;
       this.gapPercent = INITIAL_GAP_PERCENT;
       this.obstaclePairCleared = false;
+      this.runningElapsedMs = 0;
       this.obstacles.forEach((obstacle) => obstacle.destroy());
       this.obstacles = this.makeObstaclePair(width * 0.85, this.gapPercent);
       this.gameState = GameState.Running;
@@ -125,6 +130,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     if (this.gameState == GameState.Running) {
+      this.runningElapsedMs += clampedDelta;
       const accelerationY = gotInputStimulus ? UP_THRUST : 0;
       body.setAccelerationY(accelerationY);
       const scrollThisFrame = this.getScrollDistance(clampedDelta);
@@ -268,7 +274,13 @@ export class GameScene extends Phaser.Scene {
 
   private getSpeed() {
     const maxDimension = Math.max(this.scale.width, this.scale.height);
-    return Math.round(maxDimension / 200);
+    const baseSpeed = maxDimension / 200;
+    const rampProgress = Math.min(
+      1,
+      this.runningElapsedMs / SPEED_RAMP_DURATION_MS
+    );
+    const multiplier = 1 + (MAX_SPEED_MULTIPLIER - 1) * rampProgress;
+    return Math.round(baseSpeed * multiplier);
   }
 
   private getObstacleWidth() {

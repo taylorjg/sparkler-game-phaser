@@ -1,5 +1,6 @@
 import * as Phaser from "phaser";
 import { ScorePanel } from "@app/panels/score-panel";
+import { HighScorePanel } from "@app/panels/high-score-panel";
 import { MicrophonePanel } from "@app/panels/microphone-panel";
 import { GameOverPanel } from "@app/panels/gameover-panel";
 import { VersionPanel } from "@app/panels/version-panel";
@@ -24,6 +25,7 @@ export class HUDScene extends Phaser.Scene {
 
   public create() {
     new ScorePanel(this);
+    new HighScorePanel(this);
     new MicrophonePanel(this);
     new GameOverPanel(this);
     new VersionPanel(this);
