@@ -1,5 +1,6 @@
 import "audioworklet-polyfill";
 import log from "loglevel";
+import { AppBaseUrl } from "@app/constants";
 
 export type MicrophoneModuleConfig = {
   NOISE_LEVEL_THRESHOLD: number;
@@ -65,7 +66,7 @@ const configureMicrophoneModule = (
         const audioContext = new AudioContext();
         const source = audioContext.createMediaStreamSource(mediaStream);
         await audioContext.audioWorklet.addModule(
-          `${import.meta.env.BASE_URL}stream-processor.js`
+          `${AppBaseUrl}stream-processor.js`
         );
         const streamWorklet = new StreamWorklet(
           audioContext,

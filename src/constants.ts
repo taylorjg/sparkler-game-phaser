@@ -1,3 +1,6 @@
+// Keep in sync with `base` in vite.config.ts.
+export const AppBaseUrl = "/sparkler-game-phaser/";
+
 export const SparklerGameEvents = {
   GameStarted: "GameStarted",
   GameEnded: "GameEnded",

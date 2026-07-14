@@ -3,7 +3,7 @@ import { createTextBig } from "@app/ui/typography";
 import { applyAnchor } from "@app/ui/layout";
 import { SparklerGameEvents } from "@app/constants";
 
-export class ScorePanel {
+export class CurrentScorePanel {
   private score: number;
   private scoreText: Phaser.GameObjects.Text;
   private container: Phaser.GameObjects.Container;

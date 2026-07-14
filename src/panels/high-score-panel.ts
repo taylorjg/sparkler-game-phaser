@@ -1,4 +1,5 @@
 import * as Phaser from "phaser";
+import { promisifyTween } from "@app/helpers/promisify";
 import { createTextBig } from "@app/ui/typography";
 import { applyAnchor } from "@app/ui/layout";
 import { SparklerGameEvents } from "@app/constants";
@@ -58,7 +59,7 @@ export class HighScorePanel {
     this.layout();
   }
 
-  private playThrob(): void {
+  private async playThrob(): Promise<void> {
     if (this.throbTween != null) {
       this.throbTween.stop();
       this.throbTween = null;
@@ -66,18 +67,25 @@ export class HighScorePanel {
 
     this.highScoreText.setScale(1);
 
-    this.throbTween = this.scene.tweens.add({
+    const tween = this.scene.tweens.add({
       targets: this.highScoreText,
       scale: 1.05,
       duration: 200,
       yoyo: true,
       repeat: 1,
       ease: "Sine.easeInOut",
-      onComplete: () => {
-        this.highScoreText.setScale(1);
-        this.throbTween = null;
-      },
     });
+
+    this.throbTween = tween;
+
+    try {
+      await promisifyTween(tween);
+    } finally {
+      this.highScoreText.setScale(1);
+      if (this.throbTween === tween) {
+        this.throbTween = null;
+      }
+    }
   }
 
   private onGameStarted(): void {
@@ -96,7 +104,7 @@ export class HighScorePanel {
     }
     this.container.setVisible(this.highScore > 0);
     if (isNewHighScore) {
-      this.playThrob();
+      void this.playThrob();
     }
   }
 }

@@ -1,5 +1,5 @@
 import * as Phaser from "phaser";
-import { promisifyDelayedCall } from "@app/promisify-things";
+import { promisifyDelayedCall } from "@app/helpers/promisify";
 import { createTextSmall } from "@app/ui/typography";
 import { applyAnchor, createAnchoredContainer } from "@app/ui/layout";
 import { ImageKeys, SparklerGameEvents } from "@app/constants";

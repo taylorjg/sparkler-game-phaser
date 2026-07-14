@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "paths": {
-      "@app/*": ["./src/*"]
+      "@app/*": ["./src/*"],
+      "@app/../package.json": ["./package.json"]
     },
     "target": "ES2020",
     "module": "ESNext",

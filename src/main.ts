@@ -1,6 +1,6 @@
 import * as Phaser from "phaser";
-import { GameScene } from "./scenes/game-scene";
-import { HUDScene } from "./scenes/hud-scene";
+import { GameScene } from "@app/scenes/game-scene";
+import { HUDScene } from "@app/scenes/hud-scene";
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
   title: "Sparkler Game",
