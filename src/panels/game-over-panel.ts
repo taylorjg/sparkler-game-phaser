@@ -1,6 +1,6 @@
 import * as Phaser from "phaser";
 import { createTextBig } from "@app/ui/typography";
-import { applyAnchor, layoutVertical } from "@app/ui/layout";
+import { applyAnchor } from "@app/ui/layout";
 import { SparklerGameEvents } from "@app/constants";
 
 export class GameOverPanel {
@@ -10,11 +10,9 @@ export class GameOverPanel {
   public constructor(scene: Phaser.Scene) {
     this.scene = scene;
 
-    const textLine1 = createTextBig(scene, "GAME OVER");
-    const textLine2 = createTextBig(scene, "TAP TO RESTART");
+    const text = createTextBig(scene, "GAME OVER");
 
-    this.gameOverPanel = scene.add.container(0, 0, [textLine1, textLine2]);
-    layoutVertical([textLine1, textLine2], 100);
+    this.gameOverPanel = scene.add.container(0, 0, [text]);
     this.layout();
     this.gameOverPanel.setVisible(false);
 

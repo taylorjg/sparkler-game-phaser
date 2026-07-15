@@ -11,9 +11,9 @@ const getMaxDimension = () => Math.max(window.innerWidth, window.innerHeight);
 const getResponsiveFontSize = (compact: number, spacious: number) =>
   getMaxDimension() <= 640 ? compact : spacious;
 
-const getFontSizeBig = () => getResponsiveFontSize(24, 48);
-const getFontSizeSmall = () => getResponsiveFontSize(12, 18);
-const getFontSizeVerySmall = () => getResponsiveFontSize(10, 14);
+const getFontSizeBig = () => getResponsiveFontSize(20, 48);
+const getFontSizeSmall = () => getResponsiveFontSize(10, 18);
+const getFontSizeVerySmall = () => getResponsiveFontSize(8, 14);
 
 const getFontPadding = (fontSize: number) => ({
   top: Math.max(2, Math.ceil(fontSize * 0.2)),
