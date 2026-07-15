@@ -1,13 +1,14 @@
 import * as Phaser from "phaser";
 import { promisifyDelayedCall } from "@app/helpers/promisify";
-import { createTextSmall } from "@app/ui/typography";
+import { HUD_FONT_COLOUR, createTextSmall } from "@app/ui/typography";
 import { applyAnchor, createAnchoredContainer } from "@app/ui/layout";
 import { ImageKeys, SparklerGameEvents } from "@app/constants";
 
 const SHOW_MICROPHONE_ERROR_FOR = 5000;
 const AUTO_TURN_OFF_PERIOD = 10000;
 const MICROPHONE_ICON_DISPLAY_SIZE = 36;
-const MICROPHONE_ICON_COLOUR = 0xffffff;
+const MICROPHONE_ICON_COLOUR =
+  Phaser.Display.Color.HexStringToColor(HUD_FONT_COLOUR).color;
 
 const styleMicIcon = (icon: Phaser.GameObjects.Image): void => {
   icon
