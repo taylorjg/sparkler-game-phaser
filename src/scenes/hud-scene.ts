@@ -1,6 +1,7 @@
 import * as Phaser from "phaser";
 import { CurrentScorePanel } from "@app/panels/current-score-panel";
 import { HighScorePanel } from "@app/panels/high-score-panel";
+import { FullscreenPanel } from "@app/panels/fullscreen-panel";
 import { MicrophonePanel } from "@app/panels/microphone-panel";
 import { GameOverPanel } from "@app/panels/game-over-panel";
 import { VersionPanel } from "@app/panels/version-panel";
@@ -28,11 +29,17 @@ export class HUDScene extends Phaser.Scene {
       ImageKeys.MicrophoneOff,
       "assets/icons/microphone-slash-solid.png"
     );
+    this.load.image(ImageKeys.FullscreenEnter, "assets/icons/expand-solid.png");
+    this.load.image(
+      ImageKeys.FullscreenExit,
+      "assets/icons/compress-solid.png"
+    );
   }
 
   public create() {
     new CurrentScorePanel(this);
     new HighScorePanel(this);
+    new FullscreenPanel(this);
     new MicrophonePanel(this);
     new GameOverPanel(this);
     new VersionPanel(this);
