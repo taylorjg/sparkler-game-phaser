@@ -38,13 +38,11 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
   },
   callbacks: {
     postBoot: (game) => {
-      game.scale.on(
-        Phaser.Scale.Events.ENTER_FULLSCREEN,
-        () => scheduleScaleRefresh(game)
+      game.scale.on(Phaser.Scale.Events.ENTER_FULLSCREEN, () =>
+        scheduleScaleRefresh(game)
       );
-      game.scale.on(
-        Phaser.Scale.Events.LEAVE_FULLSCREEN,
-        () => scheduleScaleRefresh(game)
+      game.scale.on(Phaser.Scale.Events.LEAVE_FULLSCREEN, () =>
+        scheduleScaleRefresh(game)
       );
     },
   },
