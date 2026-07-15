@@ -92,7 +92,32 @@ export class GameScene extends Phaser.Scene {
       this.onMicrophoneOff,
       this
     );
+
+    this.scale.on(Phaser.Scale.Events.RESIZE, this.relayoutWaitingScene, this);
   }
+
+  private relayoutWaitingScene = (): void => {
+    if (this.gameState !== GameState.Waiting) {
+      return;
+    }
+
+    const width = this.scale.width;
+    const height = this.scale.height;
+    const body = this.ship.body as Phaser.Physics.Arcade.Body;
+
+    this.cameras.main.scrollX = 0;
+    body.setVelocity(0, 0);
+    body.setAcceleration(0, 0);
+    body.moves = false;
+
+    this.ship.setPosition(width * 0.15, height * 0.9);
+    this.gapPercent = INITIAL_GAP_PERCENT;
+    this.obstaclePairCleared = false;
+    this.obstacles.forEach((obstacle) => obstacle.destroy());
+    this.obstacles = this.makeObstaclePair(width * 0.85, this.gapPercent);
+
+    this.physics.world.setBounds(0, 0, width, height);
+  };
 
   public update(_time: number, delta: number) {
     const width = this.scale.width;

@@ -2,14 +2,21 @@ import * as Phaser from "phaser";
 import { GameScene } from "@app/scenes/game-scene";
 import { HUDScene } from "@app/scenes/hud-scene";
 
+const scheduleScaleRefresh = (game: Phaser.Game): void => {
+  requestAnimationFrame(() => {
+    game.scale.getParentBounds();
+    game.scale.refresh();
+  });
+};
+
 const gameConfig: Phaser.Types.Core.GameConfig = {
   title: "Sparkler Game",
   type: Phaser.WEBGL,
   scale: {
     width: window.innerWidth,
     height: window.innerHeight,
-    mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
+    mode: Phaser.Scale.RESIZE,
+    autoCenter: Phaser.Scale.NO_CENTER,
     expandParent: true,
     fullscreenTarget: "game",
   },
@@ -27,6 +34,18 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
         y: 300,
       },
       debug: true,
+    },
+  },
+  callbacks: {
+    postBoot: (game) => {
+      game.scale.on(
+        Phaser.Scale.Events.ENTER_FULLSCREEN,
+        () => scheduleScaleRefresh(game)
+      );
+      game.scale.on(
+        Phaser.Scale.Events.LEAVE_FULLSCREEN,
+        () => scheduleScaleRefresh(game)
+      );
     },
   },
 };
