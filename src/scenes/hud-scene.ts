@@ -20,7 +20,14 @@ export class HUDScene extends Phaser.Scene {
       "assets/fonts/VectorBattle.ttf",
       "truetype"
     );
-    this.load.image(ImageKeys.Microphone, "assets/icons/66-microphone@2x.png");
+    this.load.image(
+      ImageKeys.MicrophoneOn,
+      "assets/icons/microphone-solid.png"
+    );
+    this.load.image(
+      ImageKeys.MicrophoneOff,
+      "assets/icons/microphone-slash-solid.png"
+    );
   }
 
   public create() {

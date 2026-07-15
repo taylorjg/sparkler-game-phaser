@@ -6,36 +6,36 @@ import { ImageKeys, SparklerGameEvents } from "@app/constants";
 
 const SHOW_MICROPHONE_ERROR_FOR = 5000;
 const AUTO_TURN_OFF_PERIOD = 10000;
+const MICROPHONE_ICON_DISPLAY_SIZE = 36;
+const MICROPHONE_ICON_COLOUR = 0xffffff;
+
+const styleMicIcon = (icon: Phaser.GameObjects.Image): void => {
+  icon
+    .setDisplaySize(MICROPHONE_ICON_DISPLAY_SIZE, MICROPHONE_ICON_DISPLAY_SIZE)
+    .setTint(MICROPHONE_ICON_COLOUR)
+    .setTintMode(Phaser.TintModes.FILL);
+};
 
 export class MicrophonePanel {
   private icon: Phaser.GameObjects.Image;
-  private muteLine: Phaser.GameObjects.Line;
   private microphonePanel: Phaser.GameObjects.Container;
   private scene: Phaser.Scene;
+  private muted: boolean;
   private autoTurnOffTimeoutId: ReturnType<typeof setTimeout> | null;
 
   public constructor(scene: Phaser.Scene) {
     this.scene = scene;
     this.autoTurnOffTimeoutId = null;
+    this.muted = true;
 
     this.icon = scene.add
-      .image(0, 0, ImageKeys.Microphone)
+      .image(0, 0, ImageKeys.MicrophoneOff)
       .setOrigin(1, 1)
       .setInteractive({ useHandCursor: true })
       .on(Phaser.Input.Events.POINTER_DOWN, this.onClickMicrophone, this);
+    styleMicIcon(this.icon);
 
-    const iconWidth = this.icon.width;
-    const iconHeight = this.icon.height;
-    this.muteLine = scene.add
-      .line(0, 0, iconWidth, 0, 0, iconHeight, 0xff0000)
-      .setOrigin(1, 1)
-      .setLineWidth(3);
-
-    const microphoneIconContainer = scene.add
-      .container(0, 0, [this.icon, this.muteLine])
-      .setScale(0.75);
-
-    this.microphonePanel = scene.add.container(0, 0, [microphoneIconContainer]);
+    this.microphonePanel = scene.add.container(0, 0, [this.icon]);
     this.layout();
 
     this.scene.game.events.on(
@@ -63,8 +63,11 @@ export class MicrophonePanel {
     });
   };
 
-  private get muted() {
-    return this.muteLine.visible;
+  private updateIconTexture(): void {
+    this.icon.setTexture(
+      this.muted ? ImageKeys.MicrophoneOff : ImageKeys.MicrophoneOn
+    );
+    styleMicIcon(this.icon);
   }
 
   private onClickMicrophone(): void {
@@ -75,13 +78,15 @@ export class MicrophonePanel {
     }
   }
 
-  private becomeUnmuted() {
-    this.muteLine.setVisible(false);
+  private becomeUnmuted(): void {
+    this.muted = false;
+    this.updateIconTexture();
     this.scene.game.events.emit(SparklerGameEvents.MicrophoneOn);
   }
 
-  private becomeMuted() {
-    this.muteLine.setVisible(true);
+  private becomeMuted(): void {
+    this.muted = true;
+    this.updateIconTexture();
     this.scene.game.events.emit(SparklerGameEvents.MicrophoneOff);
   }
 

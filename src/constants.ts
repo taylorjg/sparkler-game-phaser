@@ -27,7 +27,8 @@ export const FontKeys = {
 export type FontKey = (typeof FontKeys)[keyof typeof FontKeys];
 
 export const ImageKeys = {
-  Microphone: "microphone",
+  MicrophoneOn: "microphone-on",
+  MicrophoneOff: "microphone-off",
 } as const;
 
 export type ImageKey = (typeof ImageKeys)[keyof typeof ImageKeys];
