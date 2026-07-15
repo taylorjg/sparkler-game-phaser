@@ -1,7 +1,7 @@
 import * as Phaser from "phaser";
 import { HUD_FONT_COLOUR } from "@app/ui/typography";
 import { applyAnchor } from "@app/ui/layout";
-import { ImageKeys } from "@app/constants";
+import { ImageKeys, SparklerGameEvents } from "@app/constants";
 
 const HUD_ICON_DISPLAY_SIZE = 36;
 const HUD_RIGHT_MARGIN = 20;
@@ -37,6 +37,12 @@ export class FullscreenPanel {
     this.fullscreenPanel = scene.add.container(0, 0, [this.icon]);
     this.layout();
 
+    scene.game.events.on(
+      SparklerGameEvents.GameStarted,
+      this.onGameStarted,
+      this
+    );
+    scene.game.events.on(SparklerGameEvents.GameEnded, this.onGameEnded, this);
     scene.scale.on(
       Phaser.Scale.Events.ENTER_FULLSCREEN,
       this.onEnterFullscreen,
@@ -66,6 +72,14 @@ export class FullscreenPanel {
 
   private onClickFullscreen(): void {
     this.scene.scale.toggleFullscreen();
+  }
+
+  private onGameStarted(): void {
+    this.fullscreenPanel.setVisible(false);
+  }
+
+  private onGameEnded(): void {
+    this.fullscreenPanel.setVisible(true);
   }
 
   private onEnterFullscreen(): void {
