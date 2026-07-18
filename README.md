@@ -16,6 +16,16 @@ You can control the sparkler in one of three ways:
 - **Click / tap** — anywhere in the game window
 - **Microphone** — make noise after enabling the mic icon (bottom right)
 
+### Agent mode
+
+Add `?agent=1` to the URL to watch a trained policy play automatically (no keyboard, click, or mic input). The game starts on its own and flaps using a behavioral-cloning model exported from [sparkler-game-rl](https://github.com/taylorjg/sparkler-game-rl).
+
+**Example:** [taylorjg.github.io/sparkler-game-phaser/?agent=1](https://taylorjg.github.io/sparkler-game-phaser/?agent=1)
+
+Locally: [http://localhost:5173/sparkler-game-phaser/?agent=1](http://localhost:5173/sparkler-game-phaser/?agent=1)
+
+Policy weights live in `public/assets/models/sparkler_bc.json`. Re-export from the RL repo with `docker compose run --rm dev python -m train.export_policy`, then copy the JSON into this project.
+
 ## Technologies
 
 | Area | Stack |

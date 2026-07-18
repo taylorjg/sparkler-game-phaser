@@ -1,18 +1,32 @@
 import * as Phaser from "phaser";
 import configureMicrophoneModule from "@app/audio/microphone";
+import { buildAgentObservation } from "@app/agent/agent-observation";
+import {
+  AGENT_POLICY_KEY,
+  AGENT_POLICY_PATH,
+  isAgentMode,
+  loadAgentPolicyFromCache,
+} from "@app/agent/agent-controller";
+import type { AgentPolicy } from "@app/agent/agent-policy";
+import type {
+  AgentObservationContext,
+  ObstacleGapInfo,
+} from "@app/agent/types";
 import { ParticleKeys, SceneKeys, SparklerGameEvents } from "@app/constants";
-
-const UP_THRUST = -1500;
-const OBSTACLE_LINE_WIDTH = 2;
-const INITIAL_GAP_PERCENT = 30;
-const MIN_GAP_PERCENT = 10;
-const SPEED_RAMP_DURATION_MS = 60_000;
-const MAX_SPEED_MULTIPLIER = 1.75;
-const REFERENCE_FRAME_MS = 1000 / 60;
-const MAX_DELTA_MS = 50;
-const STIMULUS_FRAME_COUNT = 5;
-const TAP_STIMULUS_DURATION_MS = STIMULUS_FRAME_COUNT * REFERENCE_FRAME_MS;
-const NOISE_STIMULUS_DURATION_MS = STIMULUS_FRAME_COUNT * REFERENCE_FRAME_MS;
+import {
+  getObstacleWidth,
+  getScrollDistance,
+  INITIAL_GAP_PERCENT,
+  INITIAL_OBSTACLE_X_RATIO,
+  MIN_GAP_PERCENT,
+  NOISE_STIMULUS_DURATION_MS,
+  OBSTACLE_LINE_WIDTH,
+  SHIP_X_RATIO,
+  SHIP_Y_RATIO,
+  TAP_STIMULUS_DURATION_MS,
+  UP_THRUST,
+  MAX_DELTA_MS,
+} from "@app/game/tuning";
 
 enum GameState {
   Waiting,
@@ -30,9 +44,12 @@ export class GameScene extends Phaser.Scene {
   private ship!: Phaser.GameObjects.Rectangle;
   private sparkler!: Phaser.GameObjects.Particles.ParticleEmitter;
   private obstacles!: Phaser.GameObjects.Polygon[];
+  private obstacleGap!: ObstacleGapInfo;
   private gapPercent!: number;
   private obstaclePairCleared!: boolean;
   private runningElapsedMs!: number;
+  private agentMode!: boolean;
+  private agentPolicy: AgentPolicy | null = null;
   private microphoneModule: ReturnType<typeof configureMicrophoneModule>;
 
   public constructor() {
@@ -46,6 +63,10 @@ export class GameScene extends Phaser.Scene {
 
   public preload() {
     this.load.image(ParticleKeys.Star, "assets/particles/star_06.png");
+    this.agentMode = isAgentMode();
+    if (this.agentMode) {
+      this.load.json(AGENT_POLICY_KEY, AGENT_POLICY_PATH);
+    }
   }
 
   public create() {
@@ -59,6 +80,9 @@ export class GameScene extends Phaser.Scene {
     this.gapPercent = INITIAL_GAP_PERCENT;
     this.obstaclePairCleared = false;
     this.runningElapsedMs = 0;
+    this.agentPolicy = this.agentMode
+      ? loadAgentPolicyFromCache(this.cache)
+      : null;
 
     const searchParams = new URLSearchParams(window.location.search);
     this.physics.world.drawDebug = searchParams.has("debug");
@@ -67,7 +91,7 @@ export class GameScene extends Phaser.Scene {
     const height = this.scale.height;
 
     this.ship = this.add
-      .rectangle(width * 0.15, height * 0.9, 5, 5, 0xffffff)
+      .rectangle(width * SHIP_X_RATIO, height * SHIP_Y_RATIO, 5, 5, 0xffffff)
       .setAngle(45);
     this.ship.scrollFactorX = 0;
     this.physics.add.existing(this.ship);
@@ -78,9 +102,14 @@ export class GameScene extends Phaser.Scene {
 
     this.sparkler = this.createSparklerParticleEmitter();
 
-    this.obstacles = this.makeObstaclePair(width * 0.85, this.gapPercent);
+    this.obstacles = this.makeObstaclePair(
+      width * INITIAL_OBSTACLE_X_RATIO,
+      this.gapPercent
+    );
 
-    this.input.on(Phaser.Input.Events.POINTER_DOWN, this.onPointerDown, this);
+    if (!this.agentMode) {
+      this.input.on(Phaser.Input.Events.POINTER_DOWN, this.onPointerDown, this);
+    }
 
     this.game.events.on(
       SparklerGameEvents.MicrophoneOn,
@@ -94,6 +123,21 @@ export class GameScene extends Phaser.Scene {
     );
 
     this.scale.on(Phaser.Scale.Events.RESIZE, this.relayoutWaitingScene, this);
+  }
+
+  public getAgentObservationContext(): AgentObservationContext {
+    const body = this.ship.body as Phaser.Physics.Arcade.Body;
+    return {
+      shipY: this.ship.y,
+      velocityY: body.velocity.y,
+      viewportWidth: this.scale.width,
+      viewportHeight: this.scale.height,
+      scrollX: this.cameras.main.scrollX,
+      shipScreenX: this.ship.x,
+      runningElapsedMs: this.runningElapsedMs,
+      thrustActive: this.tapped || this.noised,
+      obstacle: this.obstacleGap,
+    };
   }
 
   private relayoutWaitingScene = (): void => {
@@ -110,11 +154,14 @@ export class GameScene extends Phaser.Scene {
     body.setAcceleration(0, 0);
     body.moves = false;
 
-    this.ship.setPosition(width * 0.15, height * 0.9);
+    this.ship.setPosition(width * SHIP_X_RATIO, height * SHIP_Y_RATIO);
     this.gapPercent = INITIAL_GAP_PERCENT;
     this.obstaclePairCleared = false;
     this.obstacles.forEach((obstacle) => obstacle.destroy());
-    this.obstacles = this.makeObstaclePair(width * 0.85, this.gapPercent);
+    this.obstacles = this.makeObstaclePair(
+      width * INITIAL_OBSTACLE_X_RATIO,
+      this.gapPercent
+    );
 
     this.physics.world.setBounds(0, 0, width, height);
   };
@@ -125,14 +172,27 @@ export class GameScene extends Phaser.Scene {
     const body = this.ship.body as Phaser.Physics.Arcade.Body;
     const clampedDelta = Math.min(delta, MAX_DELTA_MS);
 
-    if (Phaser.Input.Keyboard.JustDown(this.cursors.up)) {
+    if (!this.agentMode && Phaser.Input.Keyboard.JustDown(this.cursors.up)) {
       this.triggerFlap();
     }
 
-    // One of the following:
-    // - the UP ARROW key was pressed (short flap, same as tap)
-    // - the screen has been clicked or tapped
-    // - a certain level of sound has been picked up by the microphone
+    if (this.agentMode && this.gameState === GameState.Waiting) {
+      this.triggerFlap();
+    }
+
+    if (
+      this.agentMode &&
+      this.gameState === GameState.Running &&
+      this.agentPolicy !== null
+    ) {
+      const observation = buildAgentObservation(
+        this.getAgentObservationContext()
+      );
+      if (this.agentPolicy.decideFlap(observation)) {
+        this.triggerFlap();
+      }
+    }
+
     const gotInputStimulus = this.tapped || this.noised;
 
     if (this.gameState == GameState.Waiting && gotInputStimulus) {
@@ -143,13 +203,17 @@ export class GameScene extends Phaser.Scene {
       }
 
       body.moves = true;
+      body.setVelocity(0, 0);
       this.cameras.main.scrollX = 0;
-      this.ship.y = height * 0.9;
+      this.ship.y = height * SHIP_Y_RATIO;
       this.gapPercent = INITIAL_GAP_PERCENT;
       this.obstaclePairCleared = false;
       this.runningElapsedMs = 0;
       this.obstacles.forEach((obstacle) => obstacle.destroy());
-      this.obstacles = this.makeObstaclePair(width * 0.85, this.gapPercent);
+      this.obstacles = this.makeObstaclePair(
+        width * INITIAL_OBSTACLE_X_RATIO,
+        this.gapPercent
+      );
       this.gameState = GameState.Running;
       this.game.events.emit(SparklerGameEvents.GameStarted);
     }
@@ -158,7 +222,12 @@ export class GameScene extends Phaser.Scene {
       this.runningElapsedMs += clampedDelta;
       const accelerationY = gotInputStimulus ? UP_THRUST : 0;
       body.setAccelerationY(accelerationY);
-      const scrollThisFrame = this.getScrollDistance(clampedDelta);
+      const scrollThisFrame = getScrollDistance(
+        width,
+        height,
+        this.runningElapsedMs,
+        clampedDelta
+      );
       this.cameras.main.scrollX += scrollThisFrame;
       this.checkForCollision();
     }
@@ -192,6 +261,9 @@ export class GameScene extends Phaser.Scene {
   }
 
   private onMicrophoneStimulus(_maxValue: number) {
+    if (this.agentMode) {
+      return;
+    }
     if (!this.noised) {
       this.noisedRemainingMs = NOISE_STIMULUS_DURATION_MS;
     }
@@ -250,7 +322,7 @@ export class GameScene extends Phaser.Scene {
       const obstacleX =
         this.cameras.main.scrollX +
         this.scale.width +
-        this.getObstacleWidth() +
+        getObstacleWidth(this.scale.width, this.scale.height) +
         OBSTACLE_LINE_WIDTH;
       this.obstacles = this.makeObstaclePair(obstacleX, this.gapPercent);
       this.obstaclePairCleared = false;
@@ -293,26 +365,6 @@ export class GameScene extends Phaser.Scene {
     emitter.explode(40);
   }
 
-  private getScrollDistance(delta: number): number {
-    return this.getSpeed() * (delta / REFERENCE_FRAME_MS);
-  }
-
-  private getSpeed() {
-    const maxDimension = Math.max(this.scale.width, this.scale.height);
-    const baseSpeed = maxDimension / 200;
-    const rampProgress = Math.min(
-      1,
-      this.runningElapsedMs / SPEED_RAMP_DURATION_MS
-    );
-    const multiplier = 1 + (MAX_SPEED_MULTIPLIER - 1) * rampProgress;
-    return Math.round(baseSpeed * multiplier);
-  }
-
-  private getObstacleWidth() {
-    const maxDimension = Math.max(this.scale.width, this.scale.height);
-    return Math.round(maxDimension / 20);
-  }
-
   private makeObstaclePair(
     x: number,
     gapPercent: number
@@ -332,16 +384,21 @@ export class GameScene extends Phaser.Scene {
       return polygon;
     };
 
-    const obstacleWidth = this.getObstacleWidth();
-
+    const obstacleWidth = getObstacleWidth(this.scale.width, this.scale.height);
     const RADIUS = obstacleWidth / 2;
-
     const height = this.scale.height;
     const gapHeight = (height * gapPercent) / 100;
     const halfRemainingHeight = (height - gapHeight) / 2;
     const centreOffsetRatio = Phaser.Math.FloatBetween(-0.5, 0.5);
     const upperHeight = (1 + centreOffsetRatio) * halfRemainingHeight;
     const lowerHeight = (1 - centreOffsetRatio) * halfRemainingHeight;
+
+    this.obstacleGap = {
+      x,
+      width: obstacleWidth,
+      gapTop: upperHeight,
+      gapBottom: height - lowerHeight,
+    };
 
     const upperObstacle = makeObstacle((path: Phaser.Curves.Path): void => {
       path
