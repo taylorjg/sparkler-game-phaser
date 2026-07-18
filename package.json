@@ -1,7 +1,7 @@
 {
   "name": "sparkler-game-phaser",
   "description": "Recreate Seb Lee-Delisle's sparkler game from the Royal Institution Christmas Lectures 2019 part 2 using Phaser 4 and TypeScript",
-  "version": "0.0.28",
+  "version": "0.0.29",
   "type": "module",
   "homepage": "https://taylorjg.github.io/sparkler-game-phaser/",
   "scripts": {
