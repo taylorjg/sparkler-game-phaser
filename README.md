@@ -1,4 +1,4 @@
-![CI](https://github.com/taylorjg/sparkler-game-phaser/actions/workflows/ci-cd.yaml/badge.svg?branch=master)
+[![CI/CD](https://github.com/taylorjg/sparkler-game-phaser/actions/workflows/ci-cd.yaml/badge.svg)](https://github.com/taylorjg/sparkler-game-phaser/actions/workflows/ci-cd.yaml)
 
 # Sparkler Game (Phaser)
 
