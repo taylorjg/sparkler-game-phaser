@@ -1,3 +1,5 @@
+![CI](https://github.com/taylorjg/sparkler-game-phaser/actions/workflows/ci-cd.yaml/badge.svg?branch=master)
+
 # Sparkler Game (Phaser)
 
 Recreate Seb Lee-Delisle's interactive sparkler game from the second Royal Institution Christmas Lecture with Dr Hannah Fry (27 December 2019). The audience used noise to guide a sparkler through a scrolling sequence of obstacles — this version lets you play the same game in the browser.
