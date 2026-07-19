@@ -1,6 +1,7 @@
 import * as Phaser from "phaser";
 import { GameScene } from "@app/scenes/game-scene";
 import { HUDScene } from "@app/scenes/hud-scene";
+import { configureRunningCursorHide } from "@app/cursor-running-hide";
 import { isFullscreenMode } from "@app/helpers/url-params";
 
 const scheduleScaleRefresh = (game: Phaser.Game): void => {
@@ -39,6 +40,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
   },
   callbacks: {
     postBoot: (game) => {
+      configureRunningCursorHide(game);
       if (isFullscreenMode() && !game.scale.isFullscreen) {
         game.scale.startFullscreen();
       }
