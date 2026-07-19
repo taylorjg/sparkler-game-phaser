@@ -1,6 +1,7 @@
 import * as Phaser from "phaser";
 import { GameScene } from "@app/scenes/game-scene";
 import { HUDScene } from "@app/scenes/hud-scene";
+import { isFullscreenMode } from "@app/helpers/url-params";
 
 const scheduleScaleRefresh = (game: Phaser.Game): void => {
   requestAnimationFrame(() => {
@@ -38,6 +39,9 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
   },
   callbacks: {
     postBoot: (game) => {
+      if (isFullscreenMode() && !game.scale.isFullscreen) {
+        game.scale.startFullscreen();
+      }
       game.scale.on(Phaser.Scale.Events.ENTER_FULLSCREEN, () =>
         scheduleScaleRefresh(game)
       );

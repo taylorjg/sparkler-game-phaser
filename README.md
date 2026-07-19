@@ -18,13 +18,15 @@ You can control the sparkler in one of three ways:
 
 ### Agent mode
 
-Add `?agent=1` to the URL to watch a trained policy play automatically (no keyboard, click, or mic input). The game starts on its own and flaps using a behavioral-cloning model exported from [sparkler-game-rl](https://github.com/taylorjg/sparkler-game-rl).
+Add `?agent=1` to the URL to start in agent mode automatically, or tap the robot icon (bottom right) to toggle it on and off. The game starts on its own when agent mode is active and flaps using a behavioral-cloning model exported from [sparkler-game-rl](https://github.com/taylorjg/sparkler-game-rl).
 
 **Example:** [taylorjg.github.io/sparkler-game-phaser/?agent=1](https://taylorjg.github.io/sparkler-game-phaser/?agent=1)
 
 Locally: [http://localhost:5173/sparkler-game-phaser/?agent=1](http://localhost:5173/sparkler-game-phaser/?agent=1)
 
 Policy weights live in `public/assets/models/sparkler_bc.json`. Re-export from the RL repo with `docker compose run --rm dev python -m train.export_policy`, then copy the JSON into this project.
+
+Add `?fullscreen` to the URL to enter fullscreen automatically on load (e.g. `?agent=1&fullscreen` for a hands-off demo).
 
 ## Technologies
 
@@ -35,7 +37,7 @@ Policy weights live in `public/assets/models/sparkler_bc.json`. Re-export from t
 | **Build / dev server** | [Vite](https://vite.dev/) |
 | **Audio input** | Web Audio API (`AudioContext`, `AudioWorklet`) with [audioworklet-polyfill](https://www.npmjs.com/package/audioworklet-polyfill) |
 | **Logging** | [loglevel](https://www.npmjs.com/package/loglevel) (microphone module) |
-| **Font** | [Vector Battle](https://www.dafont.com/vector-battle.font) TrueType (`VectorBattle.ttf` in `public/assets/fonts/`, loaded via Phaser and styled in `src/ui/typography.ts`) |
+| **Font** | [Vector Battle](https://www.dafont.com/vector-battle.font) TrueType (`vector-battle.ttf` in `public/assets/fonts/`, loaded via Phaser and styled in `src/ui/typography.ts`) |
 | **Lint / format** | [ESLint](https://eslint.org/), [Prettier](https://prettier.io/), [typescript-eslint](https://typescript-eslint.io/) |
 | **Hosting** | [GitHub Pages](https://pages.github.com/) via [gh-pages](https://www.npmjs.com/package/gh-pages) |
 | **CI/CD** | GitHub Actions (lint, typecheck, build on push; deploy on tag) |

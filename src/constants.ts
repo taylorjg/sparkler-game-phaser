@@ -8,6 +8,8 @@ export const SparklerGameEvents = {
   MicrophoneOn: "MicrophoneOn",
   MicrophoneOff: "MicrophoneOff",
   MicrophoneError: "MicrophoneError",
+  AgentOn: "AgentOn",
+  AgentOff: "AgentOff",
 } as const;
 
 export type SparklerGameEvent =
@@ -31,6 +33,7 @@ export const ImageKeys = {
   MicrophoneOff: "microphone-off",
   FullscreenEnter: "fullscreen-enter",
   FullscreenExit: "fullscreen-exit",
+  Agent: "agent",
 } as const;
 
 export type ImageKey = (typeof ImageKeys)[keyof typeof ImageKeys];

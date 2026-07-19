@@ -62,11 +62,9 @@ export class GameScene extends Phaser.Scene {
   }
 
   public preload() {
-    this.load.image(ParticleKeys.Star, "assets/particles/star_06.png");
+    this.load.image(ParticleKeys.Star, "assets/particles/star.png");
+    this.load.json(AGENT_POLICY_KEY, AGENT_POLICY_PATH);
     this.agentMode = isAgentMode();
-    if (this.agentMode) {
-      this.load.json(AGENT_POLICY_KEY, AGENT_POLICY_PATH);
-    }
   }
 
   public create() {
@@ -107,10 +105,10 @@ export class GameScene extends Phaser.Scene {
       this.gapPercent
     );
 
-    if (!this.agentMode) {
-      this.input.on(Phaser.Input.Events.POINTER_DOWN, this.onPointerDown, this);
-    }
+    this.input.on(Phaser.Input.Events.POINTER_DOWN, this.onPointerDown, this);
 
+    this.game.events.on(SparklerGameEvents.AgentOn, this.onAgentOn, this);
+    this.game.events.on(SparklerGameEvents.AgentOff, this.onAgentOff, this);
     this.game.events.on(
       SparklerGameEvents.MicrophoneOn,
       this.onMicrophoneOn,
@@ -257,7 +255,21 @@ export class GameScene extends Phaser.Scene {
   }
 
   private onPointerDown() {
+    if (this.agentMode) {
+      return;
+    }
     this.triggerFlap();
+  }
+
+  private onAgentOn(): void {
+    this.agentMode = true;
+    if (this.agentPolicy === null) {
+      this.agentPolicy = loadAgentPolicyFromCache(this.cache);
+    }
+  }
+
+  private onAgentOff(): void {
+    this.agentMode = false;
   }
 
   private onMicrophoneStimulus(_maxValue: number) {
@@ -271,6 +283,9 @@ export class GameScene extends Phaser.Scene {
   }
 
   private async onMicrophoneOn(): Promise<void> {
+    if (this.agentMode) {
+      return;
+    }
     console.log("[onMicrophoneOn]");
     try {
       await this.microphoneModule.microphoneOn();

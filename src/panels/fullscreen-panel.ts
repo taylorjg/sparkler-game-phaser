@@ -1,6 +1,7 @@
 import * as Phaser from "phaser";
 import { HUD_FONT_COLOUR } from "@app/ui/typography";
 import { applyAnchor } from "@app/ui/layout";
+import { attachHudIconTooltip } from "@app/ui/hud-icon-tooltip";
 import { ImageKeys, SparklerGameEvents } from "@app/constants";
 
 const HUD_ICON_DISPLAY_SIZE = 36;
@@ -35,6 +36,9 @@ export class FullscreenPanel {
     this.updateIconTexture();
 
     this.fullscreenPanel = scene.add.container(0, 0, [this.icon]);
+    attachHudIconTooltip(this.icon, this.fullscreenPanel, () =>
+      this.isFullscreen ? "Exit fullscreen" : "Enter fullscreen"
+    );
     this.layout();
 
     scene.game.events.on(
@@ -59,7 +63,9 @@ export class FullscreenPanel {
   private layout = (): void => {
     applyAnchor(this.scene, this.fullscreenPanel, {
       right: `right-${HUD_RIGHT_MARGIN}`,
-      bottom: `bottom-${HUD_BOTTOM_MARGIN + HUD_ICON_DISPLAY_SIZE + HUD_ICON_GAP}`,
+      bottom: `bottom-${
+        HUD_BOTTOM_MARGIN + 2 * (HUD_ICON_DISPLAY_SIZE + HUD_ICON_GAP)
+      }`,
     });
   };
 

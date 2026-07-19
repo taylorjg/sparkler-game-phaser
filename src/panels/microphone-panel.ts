@@ -1,7 +1,9 @@
 import * as Phaser from "phaser";
+import { isAgentMode } from "@app/agent/agent-controller";
 import { promisifyDelayedCall } from "@app/helpers/promisify";
 import { HUD_FONT_COLOUR, createTextSmall } from "@app/ui/typography";
 import { applyAnchor, createAnchoredContainer } from "@app/ui/layout";
+import { attachHudIconTooltip } from "@app/ui/hud-icon-tooltip";
 import { ImageKeys, SparklerGameEvents } from "@app/constants";
 
 const SHOW_MICROPHONE_ERROR_FOR = 5000;
@@ -9,6 +11,7 @@ const AUTO_TURN_OFF_PERIOD = 10000;
 const MICROPHONE_ICON_DISPLAY_SIZE = 36;
 const MICROPHONE_ICON_COLOUR =
   Phaser.Display.Color.HexStringToColor(HUD_FONT_COLOUR).color;
+const DISABLED_ICON_ALPHA = 0.45;
 
 const styleMicIcon = (icon: Phaser.GameObjects.Image): void => {
   icon
@@ -22,12 +25,14 @@ export class MicrophonePanel {
   private microphonePanel: Phaser.GameObjects.Container;
   private scene: Phaser.Scene;
   private muted: boolean;
+  private agentEnabled: boolean;
   private autoTurnOffTimeoutId: ReturnType<typeof setTimeout> | null;
 
   public constructor(scene: Phaser.Scene) {
     this.scene = scene;
     this.autoTurnOffTimeoutId = null;
     this.muted = true;
+    this.agentEnabled = isAgentMode();
 
     this.icon = scene.add
       .image(0, 0, ImageKeys.MicrophoneOff)
@@ -37,8 +42,21 @@ export class MicrophonePanel {
     styleMicIcon(this.icon);
 
     this.microphonePanel = scene.add.container(0, 0, [this.icon]);
+    attachHudIconTooltip(this.icon, this.microphonePanel, () => {
+      if (this.agentEnabled && this.muted) {
+        return "Microphone unavailable while agent is on";
+      }
+      return this.muted ? "Turn on microphone" : "Turn off microphone";
+    });
+    this.updateIconAppearance();
     this.layout();
 
+    this.scene.game.events.on(SparklerGameEvents.AgentOn, this.onAgentOn, this);
+    this.scene.game.events.on(
+      SparklerGameEvents.AgentOff,
+      this.onAgentOff,
+      this
+    );
     this.scene.game.events.on(
       SparklerGameEvents.MicrophoneError,
       this.onMicrophoneError,
@@ -71,7 +89,17 @@ export class MicrophonePanel {
     styleMicIcon(this.icon);
   }
 
+  private updateIconAppearance(): void {
+    this.updateIconTexture();
+    const disabled = this.agentEnabled && this.muted;
+    this.icon.setAlpha(disabled ? DISABLED_ICON_ALPHA : 1);
+  }
+
   private onClickMicrophone(): void {
+    if (this.muted && this.agentEnabled) {
+      return;
+    }
+
     if (this.muted) {
       this.becomeUnmuted();
     } else {
@@ -79,15 +107,29 @@ export class MicrophonePanel {
     }
   }
 
+  private onAgentOn(): void {
+    this.agentEnabled = true;
+    if (!this.muted) {
+      this.becomeMuted();
+    } else {
+      this.updateIconAppearance();
+    }
+  }
+
+  private onAgentOff(): void {
+    this.agentEnabled = false;
+    this.updateIconAppearance();
+  }
+
   private becomeUnmuted(): void {
     this.muted = false;
-    this.updateIconTexture();
+    this.updateIconAppearance();
     this.scene.game.events.emit(SparklerGameEvents.MicrophoneOn);
   }
 
   private becomeMuted(): void {
     this.muted = true;
-    this.updateIconTexture();
+    this.updateIconAppearance();
     this.scene.game.events.emit(SparklerGameEvents.MicrophoneOff);
   }
 
