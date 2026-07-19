@@ -1,5 +1,4 @@
 import * as Phaser from "phaser";
-import { isAgentMode } from "@app/agent/agent-controller";
 import { HUD_FONT_COLOUR } from "@app/ui/typography";
 import { applyAnchor } from "@app/ui/layout";
 import { attachHudIconTooltip } from "@app/ui/hud-icon-tooltip";
@@ -28,7 +27,7 @@ export class AgentPanel {
 
   public constructor(scene: Phaser.Scene) {
     this.scene = scene;
-    this.agentEnabled = isAgentMode();
+    this.agentEnabled = false;
 
     this.icon = scene.add
       .image(0, 0, ImageKeys.Agent)

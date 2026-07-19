@@ -1,5 +1,4 @@
 import * as Phaser from "phaser";
-import { isAgentMode } from "@app/agent/agent-controller";
 import { promisifyDelayedCall } from "@app/helpers/promisify";
 import { HUD_FONT_COLOUR, createTextSmall } from "@app/ui/typography";
 import { applyAnchor, createAnchoredContainer } from "@app/ui/layout";
@@ -32,7 +31,7 @@ export class MicrophonePanel {
     this.scene = scene;
     this.autoTurnOffTimeoutId = null;
     this.muted = true;
-    this.agentEnabled = isAgentMode();
+    this.agentEnabled = false;
 
     this.icon = scene.add
       .image(0, 0, ImageKeys.MicrophoneOff)

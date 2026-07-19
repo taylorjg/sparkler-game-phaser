@@ -4,7 +4,6 @@ import { buildAgentObservation } from "@app/agent/agent-observation";
 import {
   AGENT_POLICY_KEY,
   AGENT_POLICY_PATH,
-  isAgentMode,
   loadAgentPolicyFromCache,
 } from "@app/agent/agent-controller";
 import type { AgentPolicy } from "@app/agent/agent-policy";
@@ -64,7 +63,7 @@ export class GameScene extends Phaser.Scene {
   public preload() {
     this.load.image(ParticleKeys.Star, "assets/particles/star.png");
     this.load.json(AGENT_POLICY_KEY, AGENT_POLICY_PATH);
-    this.agentMode = isAgentMode();
+    this.agentMode = false;
   }
 
   public create() {
@@ -81,9 +80,6 @@ export class GameScene extends Phaser.Scene {
     this.agentPolicy = this.agentMode
       ? loadAgentPolicyFromCache(this.cache)
       : null;
-
-    const searchParams = new URLSearchParams(window.location.search);
-    this.physics.world.drawDebug = searchParams.has("debug");
 
     const width = this.scale.width;
     const height = this.scale.height;
