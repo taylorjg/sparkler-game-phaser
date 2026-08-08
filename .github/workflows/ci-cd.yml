@@ -5,8 +5,7 @@ on:
   pull_request:
 
 jobs:
-  run-checks:
-    name: Run lint check, typecheck, and build
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -31,7 +30,7 @@ jobs:
   deploy:
     name: Deploy to gh-pages
     if: github.ref_type == 'tag' && startsWith(github.ref_name, 'v')
-    needs: [run-checks]
+    needs: test
     runs-on: ubuntu-latest
     permissions:
       contents: write
