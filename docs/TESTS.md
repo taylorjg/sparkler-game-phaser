@@ -2,7 +2,7 @@
 
 Suggested testing roadmap for sparkler-game-phaser. There is no test runner yet — **Vitest** is a natural fit (same Vite config, ESM-native, good mocking), paired with **jsdom** or **happy-dom** for DOM APIs.
 
-**CI today:** GitHub Actions runs `lint`, `typecheck`, and `build` on every push (see `.github/workflows/ci-cd.yaml`). Tests are not wired in yet.
+**CI today:** GitHub Actions runs `lint`, `typecheck`, and `build` on every push (see `.github/workflows/ci-cd.yml`). Tests are not wired in yet.
 
 ---
 

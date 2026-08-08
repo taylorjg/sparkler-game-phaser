@@ -146,7 +146,7 @@ That would leave `GameScene` as orchestration: state transitions, wiring events,
 - **`constants.ts`** — scene keys, asset keys, and event names in one place.
 - **Assets in `public/assets/`** — correct for Vite; no duplicate asset folder in git.
 - **ESLint + Prettier + typecheck** — configured, passing, and run in CI.
-- **CI/CD** — `.github/workflows/ci-cd.yaml` + Dependabot.
+- **CI/CD** — `.github/workflows/ci-cd.yml` + Dependabot.
 
 ---
 
