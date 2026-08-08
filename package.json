@@ -8,6 +8,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
+    "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
     "predeploy": "npm run build",
@@ -28,7 +29,8 @@
     "prettier": "^3.9.6",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
     "typescript-eslint": "^8.65.0",
-    "vite": "^8.1.4"
+    "vite": "^8.1.4",
+    "vitest": "^4.1.10"
   },
   "dependencies": {
     "audioworklet-polyfill": "^1.1.2",

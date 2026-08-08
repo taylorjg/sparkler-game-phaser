@@ -1,5 +1,5 @@
 import { fileURLToPath, URL } from "node:url";
-import { defineConfig } from "vite";
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   base: "/sparkler-game-phaser/",
@@ -7,5 +7,8 @@ export default defineConfig({
     alias: {
       "@app": fileURLToPath(new URL("./src", import.meta.url)),
     },
+  },
+  test: {
+    include: ["src/**/*.test.ts"],
   },
 });

@@ -43,6 +43,14 @@ export default [
     },
   },
   {
+    files: ["**/*.test.ts"],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
+  {
     files: ["vite.config.ts", "eslint.config.js"],
     languageOptions: {
       globals: {
