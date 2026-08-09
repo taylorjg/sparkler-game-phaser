@@ -24,17 +24,17 @@ Policy weights live in `public/assets/models/sparkler_bc.json`. Re-export from t
 
 ## Technologies
 
-| Area | Stack |
-|------|--------|
-| **Game engine** | [Phaser 4](https://phaser.io/) (WebGL, Arcade physics, particles) |
-| **Language** | [TypeScript](https://www.typescriptlang.org/) |
-| **Build / dev server** | [Vite](https://vite.dev/) |
-| **Audio input** | Web Audio API (`AudioContext`, `AudioWorklet`) with [audioworklet-polyfill](https://www.npmjs.com/package/audioworklet-polyfill) |
-| **Logging** | [loglevel](https://www.npmjs.com/package/loglevel) (microphone module) |
-| **Font** | [Vector Battle](https://www.dafont.com/vector-battle.font) TrueType (`vector-battle.ttf` in `public/assets/fonts/`, loaded via Phaser and styled in `src/ui/typography.ts`) |
-| **Lint / format** | [ESLint](https://eslint.org/), [Prettier](https://prettier.io/), [typescript-eslint](https://typescript-eslint.io/) |
-| **Hosting** | [GitHub Pages](https://pages.github.com/) via [gh-pages](https://www.npmjs.com/package/gh-pages) |
-| **CI/CD** | GitHub Actions (lint, typecheck, build on push; deploy on tag) |
+| Area                   | Stack                                                                                                                                                                       |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Game engine**        | [Phaser 4](https://phaser.io/) (WebGL, Arcade physics, particles)                                                                                                           |
+| **Language**           | [TypeScript](https://www.typescriptlang.org/)                                                                                                                               |
+| **Build / dev server** | [Vite](https://vite.dev/)                                                                                                                                                   |
+| **Audio input**        | Web Audio API (`AudioContext`, `AudioWorklet`) with [audioworklet-polyfill](https://www.npmjs.com/package/audioworklet-polyfill)                                            |
+| **Logging**            | [loglevel](https://www.npmjs.com/package/loglevel) (microphone module)                                                                                                      |
+| **Font**               | [Vector Battle](https://www.dafont.com/vector-battle.font) TrueType (`vector-battle.ttf` in `public/assets/fonts/`, loaded via Phaser and styled in `src/ui/typography.ts`) |
+| **Lint / format**      | [ESLint](https://eslint.org/), [Prettier](https://prettier.io/), [typescript-eslint](https://typescript-eslint.io/)                                                         |
+| **Hosting**            | [GitHub Pages](https://pages.github.com/) via [gh-pages](https://www.npmjs.com/package/gh-pages)                                                                            |
+| **CI/CD**              | GitHub Actions (lint, typecheck, build on push; deploy on tag)                                                                                                              |
 
 ## Development
 
@@ -51,14 +51,14 @@ Opens at [http://localhost:5173/sparkler-game-phaser/](http://localhost:5173/spa
 
 ### Scripts
 
-| Command | Purpose |
-|---------|---------|
-| `npm run dev` | Vite dev server |
-| `npm run build` | Production build to `dist/` |
-| `npm run preview` | Preview production build |
-| `npm run lint` | ESLint |
-| `npm run typecheck` | `tsc --noEmit` |
-| `npm run deploy` | Build and push `dist/` to `gh-pages` branch |
+| Command             | Purpose                                     |
+| ------------------- | ------------------------------------------- |
+| `npm run dev`       | Vite dev server                             |
+| `npm run build`     | Production build to `dist/`                 |
+| `npm run preview`   | Preview production build                    |
+| `npm run lint`      | ESLint                                      |
+| `npm run typecheck` | `tsc --noEmit`                              |
+| `npm run deploy`    | Build and push `dist/` to `gh-pages` branch |
 
 ### CI/CD
 

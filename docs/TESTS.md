@@ -55,12 +55,12 @@ Mock `navigator.mediaDevices.getUserMedia`, `AudioContext`, and `audioWorklet.ad
 
 Lightweight mocks for `scene.add`, `scene.game.events`, `scene.scale`:
 
-| Panel | File | Suggested tests |
-|-------|------|-----------------|
-| **ScorePanel** | `score-panel.ts` | `GameStarted` → score 0; each `ObstacleCleared` → +1; text updates |
-| **GameOverPanel** | `gameover-panel.ts` | hidden on `GameStarted`, visible on `GameEnded` |
+| Panel               | File                  | Suggested tests                                                                                                                                                                                     |
+| ------------------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **ScorePanel**      | `score-panel.ts`      | `GameStarted` → score 0; each `ObstacleCleared` → +1; text updates                                                                                                                                  |
+| **GameOverPanel**   | `gameover-panel.ts`   | hidden on `GameStarted`, visible on `GameEnded`                                                                                                                                                     |
 | **MicrophonePanel** | `microphone-panel.ts` | click toggles mute line + emits `MicrophoneOn`/`MicrophoneOff`; `GameEnded` schedules auto-mute after 10s; `GameStarted` cancels pending auto-mute; `MicrophoneError` hides icon and shows error UI |
-| **VersionPanel** | `version-panel.ts` | shows `v{package.json version}`; re-anchors bottom-left on `RESIZE` |
+| **VersionPanel**    | `version-panel.ts`    | shows `v{package.json version}`; re-anchors bottom-left on `RESIZE`                                                                                                                                 |
 
 ### Async helpers (`src/promisify-things.ts`)
 
@@ -94,12 +94,12 @@ Small and isolated:
 
 Partially in place today:
 
-| Check | Status |
-|-------|--------|
-| `npm run lint` | CI on push |
-| `npm run typecheck` | CI on push |
-| `npm run build` | CI on push |
-| `npm test` | Not yet — add Vitest when ready |
+| Check               | Status                          |
+| ------------------- | ------------------------------- |
+| `npm run lint`      | CI on push                      |
+| `npm run typecheck` | CI on push                      |
+| `npm run build`     | CI on push                      |
+| `npm test`          | Not yet — add Vitest when ready |
 
 Suggested addition to `package.json`:
 
@@ -139,4 +139,4 @@ Optional extras:
 
 ---
 
-*Original: July 2026 · Last updated: July 2026*
+_Original: July 2026 · Last updated: July 2026_

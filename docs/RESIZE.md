@@ -60,15 +60,15 @@ Do **not** add `margin` rules on `canvas` — Phaser owns canvas layout in `FIT`
 
 ## Current Resize Behaviour
 
-| Layer | Resize behaviour |
-|--------|------------------|
-| **Scale / canvas** | Good — `FIT` scales uniformly; `CENTER_BOTH` centres letterbox; Phaser listens for window resize |
-| **HUD panels** | Good — panels listen to `scale.on(RESIZE)` and re-anchor via `layout.ts` using `scene.scale.width/height` |
-| **Game logic (speed, gap %, new obstacles)** | Good — reads `this.scale.width/height` (fixed design coords; values scale visually with canvas) |
-| **Ship position** | Scales visually — set once in `create()` at design coords; Y resets on restart |
-| **Existing obstacles** | Scales visually — polygon paths baked at design `height`; not rebuilt on resize |
-| **Font sizes** | Stale — `typography.ts` still picks size at creation from `window.inner*`; no resize hook (but text scales with `FIT`) |
-| **Letterbox bars** | Good — black via page CSS, centred via Phaser |
+| Layer                                        | Resize behaviour                                                                                                       |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **Scale / canvas**                           | Good — `FIT` scales uniformly; `CENTER_BOTH` centres letterbox; Phaser listens for window resize                       |
+| **HUD panels**                               | Good — panels listen to `scale.on(RESIZE)` and re-anchor via `layout.ts` using `scene.scale.width/height`              |
+| **Game logic (speed, gap %, new obstacles)** | Good — reads `this.scale.width/height` (fixed design coords; values scale visually with canvas)                        |
+| **Ship position**                            | Scales visually — set once in `create()` at design coords; Y resets on restart                                         |
+| **Existing obstacles**                       | Scales visually — polygon paths baked at design `height`; not rebuilt on resize                                        |
+| **Font sizes**                               | Stale — `typography.ts` still picks size at creation from `window.inner*`; no resize hook (but text scales with `FIT`) |
+| **Letterbox bars**                           | Good — black via page CSS, centred via Phaser                                                                          |
 
 After a resize, the game **looks** correct because everything scales together. Game state still "thinks" in the design resolution from load time.
 
@@ -119,4 +119,4 @@ Use `FIT` (or `RESIZE`) **and** move everything to `scene.scale` so logic and la
 
 ---
 
-*Original: July 2026 · Last updated: July 2026*
+_Original: July 2026 · Last updated: July 2026_

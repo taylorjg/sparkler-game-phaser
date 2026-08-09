@@ -10,25 +10,25 @@ Overall this is a clean, small Phaser project — lint and typecheck pass, the `
 
 ## Completed Since Original Analysis
 
-| Item | What changed |
-|------|----------------|
-| **Typecheck** | `npm run typecheck` added; existing `tsc` errors fixed |
+| Item                                  | What changed                                                                                                              |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **Typecheck**                         | `npm run typecheck` added; existing `tsc` errors fixed                                                                    |
 | **`microphone.js` → `microphone.ts`** | Typed module at `src/audio/microphone.ts`; `src/microphone.d.ts` removed; `src/vite-env.d.ts` added for `import.meta.env` |
-| **`types.ts`** | Removed — panels take `Phaser.Scene` directly |
-| **Browser timer typing** | `NodeJS.Timeout` → `ReturnType<typeof setTimeout> \| null` in `microphone-panel.ts` |
-| **Error narrowing** | `unknown` errors narrowed in `game-scene.ts` and `microphone.ts` |
-| **DOM version label** | Replaced `#version` span in `index.html` with `VersionPanel` (Phaser HUD, bottom-left) |
-| **Delta-aware game loop** | Scroll, tap/noise debounce (ms-based), and clearance detection scaled by `_delta` |
-| **Keyboard input** | Up arrow uses same flap burst as tap (`JustDown` + `triggerFlap`), not continuous thrust |
-| **Burst effect** | Clearance uses `shipX >= obstacleRight` + `obstaclePairCleared`; Phaser 4 `explode()` position fix (no double offset) |
-| **CI/CD** | GitHub Actions: lint, typecheck, build on push; gh-pages deploy on tag; Dependabot for npm + actions |
-| **Dead constants** | Commented-out `SCROLL_X_SPEED` / `OBSTACLE_WIDTH` removed from `game-scene.ts` |
-| **`ui.ts` → `typography.ts`** | Font helpers moved to `src/ui/typography.ts` |
-| **`scenes/` layout** | `game-scene.ts` and `hud-scene.ts` under `src/scenes/` |
-| **Kebab-case `src/` filenames** | e.g. `score-panel.ts`, `gameover-panel.ts`, `promisify-things.ts` |
-| **`promisifyThings.ts` rename** | Now `src/promisify-things.ts` (could still move to `utils/async.ts`) |
-| **`@app/` imports in HUD** | `hud-scene.ts` imports panels and constants via `@app/` |
-| **Analysis docs** | `IMPROVEMENTS.md`, `TESTS.md`, `RESIZE.md` live in `docs/` |
+| **`types.ts`**                        | Removed — panels take `Phaser.Scene` directly                                                                             |
+| **Browser timer typing**              | `NodeJS.Timeout` → `ReturnType<typeof setTimeout> \| null` in `microphone-panel.ts`                                       |
+| **Error narrowing**                   | `unknown` errors narrowed in `game-scene.ts` and `microphone.ts`                                                          |
+| **DOM version label**                 | Replaced `#version` span in `index.html` with `VersionPanel` (Phaser HUD, bottom-left)                                    |
+| **Delta-aware game loop**             | Scroll, tap/noise debounce (ms-based), and clearance detection scaled by `_delta`                                         |
+| **Keyboard input**                    | Up arrow uses same flap burst as tap (`JustDown` + `triggerFlap`), not continuous thrust                                  |
+| **Burst effect**                      | Clearance uses `shipX >= obstacleRight` + `obstaclePairCleared`; Phaser 4 `explode()` position fix (no double offset)     |
+| **CI/CD**                             | GitHub Actions: lint, typecheck, build on push; gh-pages deploy on tag; Dependabot for npm + actions                      |
+| **Dead constants**                    | Commented-out `SCROLL_X_SPEED` / `OBSTACLE_WIDTH` removed from `game-scene.ts`                                            |
+| **`ui.ts` → `typography.ts`**         | Font helpers moved to `src/ui/typography.ts`                                                                              |
+| **`scenes/` layout**                  | `game-scene.ts` and `hud-scene.ts` under `src/scenes/`                                                                    |
+| **Kebab-case `src/` filenames**       | e.g. `score-panel.ts`, `gameover-panel.ts`, `promisify-things.ts`                                                         |
+| **`promisifyThings.ts` rename**       | Now `src/promisify-things.ts` (could still move to `utils/async.ts`)                                                      |
+| **`@app/` imports in HUD**            | `hud-scene.ts` imports panels and constants via `@app/`                                                                   |
+| **Analysis docs**                     | `IMPROVEMENTS.md`, `TESTS.md`, `RESIZE.md` live in `docs/`                                                                |
 
 ---
 
@@ -128,12 +128,12 @@ A simple `shutdown()` on scenes/panels that calls `.off()` / `removeListener` an
 
 At ~350 lines it's still manageable, but the obvious extractions are:
 
-| Extract to       | What moves                                              |
-|------------------|---------------------------------------------------------|
+| Extract to       | What moves                                                |
+| ---------------- | --------------------------------------------------------- |
 | `obstacles.ts`   | `makeObstaclePair`, collision/clearance logic, gap sizing |
-| `particles.ts`   | sparkler + burst emitters                               |
-| `game-config.ts` | `UP_THRUST`, gap %, stimulus duration thresholds        |
-| `input.ts`       | `triggerFlap`, tapped/noised/keyboard stimulus handling |
+| `particles.ts`   | sparkler + burst emitters                                 |
+| `game-config.ts` | `UP_THRUST`, gap %, stimulus duration thresholds          |
+| `input.ts`       | `triggerFlap`, tapped/noised/keyboard stimulus handling   |
 
 That would leave `GameScene` as orchestration: state transitions, wiring events, calling helpers.
 
@@ -163,4 +163,4 @@ If you want the best ROI with minimal churn:
 
 ---
 
-*Original: July 2026 · Last updated: July 2026*
+_Original: July 2026 · Last updated: July 2026_
