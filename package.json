@@ -19,7 +19,7 @@
   "license": "MIT",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@types/node": "^26.4.1",
+    "@types/node": "^22.20.2",
     "@typescript/native": "npm:typescript@^7.0.2",
     "eslint": "^10.9.1",
     "eslint-config-prettier": "^10.1.8",
@@ -30,7 +30,7 @@
     "typescript": "npm:@typescript/typescript6@^6.0.2",
     "typescript-eslint": "^8.69.0",
     "vite": "^8.2.2",
-    "vitest": "^4.1.11"
+    "vitest": "^5.0.0"
   },
   "dependencies": {
     "audioworklet-polyfill": "^1.1.2",
